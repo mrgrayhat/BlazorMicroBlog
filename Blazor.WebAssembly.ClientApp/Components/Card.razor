@@ -1,0 +1,49 @@
+﻿<div class="card" style="width: 18rem;">
+    <img class="card-img-top" width="200" height="200" src="@Post.Thumbnail" alt="thumbnail alt">
+    <div class="card-body">
+        <h5 class="card-title">@Post.Title</h5>
+        <p class="card-text">
+            @TruncateForDisplay(Post.Body)
+            <a href="/blog/@Post.ID" class="card-link">
+                Read More
+                <i class=" oi oi-arrow-right" />
+            </a>
+        </p>
+    </div>
+    <div class="card-footer">
+        <p class="card-text"><small class="text-muted">@Post.Created.ToLocalTime()</small></p>
+        <p class="card-text">
+            @foreach (var tag in Post.Tags)
+            {
+                <small class="badge badge-pill badge-warning">#@tag </small>
+            }
+        </p>
+        <blockquote class="blockquote mb-0">
+            <footer class="blockquote-footer">
+                <small>
+                    Author: <a href="/users/@Post.Author" title="Author">@Post.Author</a>
+                </small>
+            </footer>
+        </blockquote>
+    </div>
+    <div class="card-body">
+
+        <a href="#" class="card-link">
+            <i class="oi oi-thumb-up" />
+            <small class="small"> 5 </small>
+        </a>
+        <a href="#" class="card-link">
+            <i class="oi oi-eye" />
+            <small class="small"> 100 </small>
+        </a>
+        <a href="#" class="card-link">
+            <i class="oi oi-chat" />
+            <small class="small"> 12 </small>
+        </a>
+    </div>
+</div>
+
+@code {
+
+
+}

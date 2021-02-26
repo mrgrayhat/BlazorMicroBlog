@@ -1,0 +1,22 @@
+﻿@page "/"
+
+<button @onclick="ChangePageTheme" type="button" class="btn btn-secondary @(IsDarkTheme?"btn-dark":"btn-light")">
+    Change To @(IsDarkTheme?"Light":"Dark") Mode
+</button>
+@*@(IsDarkTheme?"table-dark":null)*@
+
+<PostList />
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@functions {
+
+    public bool IsDarkTheme { get; set; } = false;
+
+
+    private void ChangePageTheme()
+    {
+        IsDarkTheme = !IsDarkTheme;
+        Console.WriteLine("Mode: " + (IsDarkTheme ? "Dark" : "Light"));
+    }
+}

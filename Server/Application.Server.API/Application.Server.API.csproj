@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+    <Authors>SaeedRezayi;mrgrayhatt</Authors>
+    <Company>SaeedRezayi;mrgrayhatt</Company>
+    <Description>An example api with crud to service the blazor client application</Description>
+    <PackageProjectUrl>https://github.com/mrgrayhat/Blazor.WebAssembly</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mrgrayhat/Blazor.WebAssembly</RepositoryUrl>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Application.Shared\Application.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

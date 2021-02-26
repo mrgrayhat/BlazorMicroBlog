@@ -1,0 +1,49 @@
+﻿@using Application.Shared.DTO.Blog
+@inject HttpClient Http
+
+<button class="btn btn-primary" @onclick=@(async ()=> await FillWithDemoData())>Fill with demo data</button>
+<button class="btn btn-danger" @onclick=@(async () => await DeleteAllPosts())>Delete all posts</button>
+
+<div class="container">
+    @if (PostsList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+
+        <div class="row">
+            <div class="col">
+                <div class="d-flex justify-content-center flex-row">
+                    <div class="p-4">
+                        <Pagination Paging="Paging" Spread="2" SelectedPage="SelectedPage" />
+                    </div>
+                    <div class="p-4">
+                        <label class="form-control col-form-label" for="pageSize">Page Size:</label>
+                        <select class="form-control custom-select" id="pageSize" name="pageSize" @onchange="@ChangePageSize">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-deck">
+            @foreach (var post in PostsList)
+            {
+                <div class="col-12 col-lg-4 col-md-6 col-sm-12">
+                    <Card Post="post" />
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+@code {
+
+}
