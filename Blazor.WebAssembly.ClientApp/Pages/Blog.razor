@@ -10,53 +10,6 @@
     </ol>
 </nav>
 
-@*<div class="container">
-        <div class="row">
-            <div class="col">
-                <table class="table table-striped table-hover table-responsive">
-                    <thead class="">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">ID</th>
-                            <th scope="col">Author</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Title</th>
-                            <th scope="col">Body</th>
-                            <th scope="col">Tags</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var post in PostsList)
-                        {
-                            <tr>
-                                <th scope="row"></th>
-                                <td>@post.ID</td>
-                                <td>@post.Author</td>
-                                <td>@post.Created.ToString()</td>
-                                <td>@post.Title</td>
-                                <td>@post.Body</td>
-                                <td>
-                                    @foreach (var tag in post.Tags)
-                                    {
-                                        <span class="badge badge-pill badge-secondary">#@tag</span>
-                                        <br />
-                                    }
-                                </td>
-                                <td>@post.Description</td>
-                                <td>
-                                    <button class="form-control btn btn-sm btn-danger" @onclick=@(async () => await DeletePost(post.ID))>Delete</button>
-                                    <button class="form-control btn btn-sm btn-info" @onclick=@(async () => await GetPost(post.ID))>Show</button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>*@
-
-
 @functions{
 
 }

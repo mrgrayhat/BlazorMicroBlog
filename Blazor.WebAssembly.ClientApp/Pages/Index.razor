@@ -1,9 +1,6 @@
 ﻿@page "/"
 
-<button @onclick="ChangePageTheme" type="button" class="btn btn-secondary @(IsDarkTheme?"btn-dark":"btn-light")">
-    Change To @(IsDarkTheme?"Light":"Dark") Mode
-</button>
-@*@(IsDarkTheme?"table-dark":null)*@
+<h1>Welcome to your simple blazor blog app.</h1>
 
 <PostList />
 
@@ -11,12 +8,4 @@
 
 @functions {
 
-    public bool IsDarkTheme { get; set; } = false;
-
-
-    private void ChangePageTheme()
-    {
-        IsDarkTheme = !IsDarkTheme;
-        Console.WriteLine("Mode: " + (IsDarkTheme ? "Dark" : "Light"));
-    }
 }
