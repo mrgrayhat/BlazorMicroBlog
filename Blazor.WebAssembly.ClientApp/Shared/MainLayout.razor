@@ -5,13 +5,24 @@
         <NavMenu />
     </div>
 
-    <div class="main">
+    <div class="main @(_darkMode ? "bg-dark" : null)">
         <div class="top-row px-4">
+            <ThemeToggle OnDarkModeToggled="@HandleDarkModeToggled" />
             <a href="https://github.com/mrgrayhat/" target="_blank" class="ml-md-auto">About Me</a>
         </div>
-
         <div class="content px-4">
             @Body
         </div>
     </div>
 </div>
+
+@code
+{
+
+    private bool _darkMode = false;
+
+    private void HandleDarkModeToggled(bool isDarkMode)
+    {
+        _darkMode = isDarkMode;
+    }
+}
