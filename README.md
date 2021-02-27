@@ -8,7 +8,7 @@ Also the blazor server side model that will be added in the future.
 ## Screen Shots:
 ![Blog Posts - Index](Documents/screenshot/Index_FullPageScreenshot.png?raw=true)
 
-## How o use:
+## How to use:
 ### Install .Net5 SDK
 
 - run server (Application.Server.API) project
@@ -37,3 +37,14 @@ Also the blazor server side model that will be added in the future.
   - Ability to paginate data and asynchronous loading/rendering ui. such as images, larg objects.
   - Ability to change the application theme. Between dark and light modes with a simple method. (Alpha, Under Construction)
   
+  ### To test loading speed and download photos, thumbnail images of posts are randomly generated from an online site, for each post.
+  You can add example post't by click on "Fill with demo data" button.
+  
+  TODO:
+  - Ability to add new post
+  - Ability to Edit a post
+  - Ability to remove a post
+  - Ability to view a post
+  - Ability to like a post, increase view per each viewer
+  - Ability to comment in posts
+  - Ability to store data into a database (in memory -> ef core + sqlite)
