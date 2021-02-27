@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,13 +20,21 @@ namespace Application.Server.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers()
+            services.AddControllers(opt =>
+            {
+                opt.ReturnHttpNotAcceptable = true;
+                opt.CacheProfiles.Add("60SecCache", new CacheProfile
+                {
+                    Duration = 60
+                });
+            })
                 .AddJsonOptions((options) =>
                 {
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     options.JsonSerializerOptions.WriteIndented = true;
                 });
-            services.AddResponseCompression();
+            //services.AddResponseCompression();
+            services.AddResponseCaching();
             services.AddCors();
         }
 
@@ -36,13 +45,14 @@ namespace Application.Server.API
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseResponseCompression();
+            //app.UseResponseCompression();
             app.UseCors(configurePolicy: (opt) =>
             {
                 opt.AllowAnyOrigin();
                 opt.AllowAnyMethod();
                 opt.AllowAnyHeader();
             });
+            app.UseResponseCaching();
             app.UseRouting();
 
             app.UseAuthorization();
