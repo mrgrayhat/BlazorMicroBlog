@@ -5,6 +5,8 @@ The goal is to demonstrate the capabilities of the Blazor.net. Also explain the 
 
 In this project, I just focused on building the user interface by blazor. So I wrote it with the blazor client side (WASM) model.
 Also the blazor server side model that will be added in the future.
+## Screen Shots:
+![Blog Posts - Index](Documents/screenshot/Index_FullPageScreenshot.png?raw=true)
 
 ## How o use:
 ### Install .Net5 SDK
