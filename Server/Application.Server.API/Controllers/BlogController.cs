@@ -50,7 +50,7 @@ namespace Application.Server.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [ResponseCache(CacheProfileName = "60SecCache")]
+        [ResponseCache(CacheProfileName = "30SecCache")]
         public ActionResult<Response<PostResponseDto>> Get(Guid Id)
         {
             if (!Guid.TryParse(Id.ToString(), out _))
@@ -76,7 +76,6 @@ namespace Application.Server.API.Controllers
         }
 
         [HttpGet]
-        [ResponseCache(CacheProfileName = "60SecCache")]
         public ActionResult<PagedResponse<IEnumerable<PostResponseDto>>> Get([FromQuery] int? pageSize, int page = 1)
         {
             pageSize = pageSize.GetValueOrDefault(DEFAULT_PAGE_SIZE);
