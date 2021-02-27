@@ -48,3 +48,4 @@ Also the blazor server side model that will be added in the future.
   - Ability to like a post, increase view per each viewer
   - Ability to comment in posts
   - Ability to store data into a database (in memory -> ef core + sqlite)
+  - Make PWA APP
