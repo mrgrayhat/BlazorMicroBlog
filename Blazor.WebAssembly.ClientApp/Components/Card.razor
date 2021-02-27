@@ -1,10 +1,10 @@
 ﻿<div class="card" style="width: 18rem;">
     <img class="card-img-top" width="200" height="200" src="@Post.Thumbnail" alt="thumbnail alt">
     <div class="card-body">
-        <h5 class="card-title">@Post.Title</h5>
+        <h3 class="card-title">@Post.Title</h3>
         <p class="card-text">
             @TruncateForDisplay(Post.Body)
-            <a href="/blog/@Post.ID" class="card-link">
+            <a href="/blog/@Post.ID" role="button" class="card-link">
                 Read More
                 <i class=" oi oi-arrow-right" />
             </a>
