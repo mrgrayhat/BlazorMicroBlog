@@ -23,15 +23,15 @@ namespace Application.Server.API
             services.AddControllers(opt =>
             {
                 opt.ReturnHttpNotAcceptable = true;
-                opt.CacheProfiles.Add("60SecCache", new CacheProfile
+                opt.CacheProfiles.Add("30SecCache", new CacheProfile
                 {
-                    Duration = 60
+                    Duration = 30
                 });
             })
                 .AddJsonOptions((options) =>
                 {
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                    options.JsonSerializerOptions.WriteIndented = true;
+                    //options.JsonSerializerOptions.WriteIndented = true;
                 });
             //services.AddResponseCompression();
             services.AddResponseCaching();
@@ -52,6 +52,7 @@ namespace Application.Server.API
                 opt.AllowAnyMethod();
                 opt.AllowAnyHeader();
             });
+
             app.UseResponseCaching();
             app.UseRouting();
 
