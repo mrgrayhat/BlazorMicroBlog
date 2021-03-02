@@ -1,10 +1,7 @@
-using Application.Server.API.Infrastructure.Contexts;
-using Application.Server.API.Infrastructure.Seeds;
+using Application.Server.API.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,58 +36,8 @@ namespace Application.Server.API
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     //options.JsonSerializerOptions.WriteIndented = true;
                 });
-            //services.AddResponseCompression();
             services.AddResponseCaching();
-            services.AddCors();
-            services.AddCors(options =>
-            {
-                options.AddPolicy("DefaultCorsPolicy",
-                    builder =>
-                    {
-                        builder
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                    });
-            });
-
-            services.AddDbContext<BlogDbContext>(options =>
-            {
-                bool.TryParse(Configuration["Blog:UseSqLite"], out bool useSqlite);
-                bool.TryParse(Configuration["Blog:UseInMemory"], out bool useInMemory);
-                string connectionString = Configuration["Blog:ConnectionString"];
-
-                if (useInMemory)
-                {
-                    options.UseInMemoryDatabase("MicroBlog"); // Takes database name
-                }
-                else if (useSqlite)
-                {
-                    options.UseSqlite(connectionString, b =>
-                    {
-                        b.MigrationsAssembly(typeof(BlogDbContext).Assembly.FullName);
-                    });
-                    options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
-                }
-                else
-                {
-                    options.UseSqlServer(connectionString, b =>
-                    {
-                        b.MigrationsAssembly(typeof(BlogDbContext).Assembly.FullName);
-                    });
-
-                }
-                if (HostingEnvironment.IsDevelopment())
-                {
-                    options.EnableSensitiveDataLogging();
-                }
-            });
-
-
-            services.AddScoped<IBlogDbContext>(provider =>
-            provider.GetService<BlogDbContext>());
-
-            services.AddScoped<IDbInitializerService, DbInitializerService>();
+            services.AddInfrastructures(HostingEnvironment, Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -99,17 +46,16 @@ namespace Application.Server.API
             {
                 app.UseDeveloperExceptionPage();
             }
-            //app.UseResponseCompression();
-            app.UseCors(configurePolicy: (opt) =>
+            app.UseCors((policy) =>
             {
-                opt.AllowAnyOrigin();
-                opt.AllowAnyMethod();
-                opt.AllowAnyHeader();
+                policy.AllowAnyOrigin();
+                policy.AllowAnyMethod();
+                policy.AllowAnyHeader();
             });
             app.UseSerilogRequestLogging();
             app.UseResponseCaching();
-            app.UseRouting();
 
+            app.UseRouting();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
