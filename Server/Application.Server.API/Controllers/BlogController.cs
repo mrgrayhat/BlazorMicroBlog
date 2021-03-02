@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Application.Server.API.Models;
+using System.Threading.Tasks;
+using Application.Server.API.Infrastructure.Contexts;
+using Application.Server.API.Infrastructure.Seeds;
+using Application.Server.API.Models.Blog;
 using Application.Shared.DTO.Blog;
 using Application.Shared.Wrappers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Server.API.Controllers
@@ -13,112 +17,155 @@ namespace Application.Server.API.Controllers
     [Route("/api/[controller]")]
     public class BlogController : ControllerBase
     {
-        private static List<PostResponseDto> BlogPosts { get; set; }
         private const int DEFAULT_PAGE_SIZE = 10;
 
         private readonly ILogger<BlogController> _logger;
+        private readonly BlogDbContext _blogDbContext;
 
-        public BlogController(ILogger<BlogController> logger)
+        public BlogController(ILogger<BlogController> logger, BlogDbContext blogDbContext)
         {
+            _blogDbContext = blogDbContext ?? throw new ArgumentNullException($"{nameof(blogDbContext)} can't be null.");
             _logger = logger;
         }
-        /// <summary>
-        /// this function just run once.
-        /// </summary>
-        static BlogController()
+
+        // Put api/<controller>/1
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Response<int>>> Put(int Id, PostDto postDto)
         {
-            // seed some demo data for blog
-            SeedExampleData();
+            var post = await _blogDbContext.Posts.FindAsync(Id).ConfigureAwait(false);
+            if (post is null)
+                return NotFound(new Response<int>($"Couldn't find any post with ID {Id}."));
+
+            post.Author = postDto.Author;
+            post.Title = postDto.Title;
+            post.Body = postDto.Body;
+            post.Description = postDto.Description;
+            post.Tags = postDto.Tags;
+            post.Thumbnail = postDto.Thumbnail;
+
+            _blogDbContext.Posts.Update(post);
+            await _blogDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return Ok(new Response<int>(post.ID));
         }
 
+        // Post api/<controller>/
         [HttpPost]
-        public ActionResult<Response<Guid>> Post(PostDto postDto)
+        public async Task<ActionResult<Response<int>>> Post(PostDto postDto)
         {
-            var mapped = new PostResponseDto
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            Post mapped = new Post
             {
                 Author = postDto.Author,
                 Title = postDto.Title,
                 Body = postDto.Body,
                 Created = DateTime.Now,
                 Description = postDto.Description,
-                ID = Guid.NewGuid(),
                 Tags = postDto.Tags,
                 Thumbnail = postDto.Thumbnail
             };
-            BlogPosts.Add(mapped);
-            return Ok(new Response<Guid>(mapped.ID));
+            await _blogDbContext.Posts.AddAsync(mapped);
+            await _blogDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return Ok(new Response<int>(mapped.ID));
         }
 
+        // Get api/<controller>/1
         [HttpGet("{id}")]
-        [ResponseCache(CacheProfileName = "30SecCache")]
-        public ActionResult<Response<PostResponseDto>> Get(Guid Id)
+        //[ResponseCache(CacheProfileName = "30SecCache")]
+        public async Task<ActionResult<Response<PostResponseDto>>> Get(int Id)
         {
-            if (!Guid.TryParse(Id.ToString(), out _))
-                return BadRequest(new Response<PostResponseDto>("invalid post id"));
-
-            var post = BlogPosts.FirstOrDefault(x => x.ID.Equals(Id));
+            Post post = await _blogDbContext.Posts.FindAsync(Id);
             if (post is null)
-                return NotFound(new Response<PostResponseDto>($"Couln't find post with id {Id}."));
-            return Ok(new Response<PostResponseDto>(post));
+                return NotFound(new Response<PostResponseDto>($"Couldn't find any post with ID {Id}."));
+
+            var postDto = new PostResponseDto
+            {
+                ID = post.ID,
+                Author = post.Author,
+                Title = post.Title,
+                Body = post.Body,
+                Description = post.Description,
+                Thumbnail = post.Thumbnail,
+                Created = post.Created,
+                Tags = post.Tags
+            };
+            return Ok(new Response<PostResponseDto>(postDto));
         }
 
+        // Delete api/<controller>/1
         [HttpDelete("{id}")]
-        public ActionResult<Response<Guid>> Delete(Guid Id)
+        public async Task<ActionResult<Response<int>>> DeleteAsync(int Id)
         {
-            if (!Guid.TryParse(Id.ToString(), out _))
-                return BadRequest(new Response<Guid>("invalid post id"));
-
-            var post = BlogPosts.FirstOrDefault(x => x.ID.Equals(Id));
+            // first time, do find query And Track the Record for future request's, so ef give it from the cache in next find's.
+            var post = await _blogDbContext.Posts
+                .FindAsync(Id);
             if (post is null)
-                return NotFound(new Response<Guid>($"Couln't find post with id {Id}."));
-            BlogPosts.Remove(post);
-            return Ok(new Response<Guid>(Id));
+                return NotFound(new Response<int>($"Couln't find post with ID {Id}."));
+            // do delete and save
+            _blogDbContext.Posts.Remove(post);
+            await _blogDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return Ok(new Response<int>(Id));
         }
 
+        // GET api/<controller>/
         [HttpGet]
-        public ActionResult<PagedResponse<IEnumerable<PostResponseDto>>> Get([FromQuery] int? pageSize, int page = 1)
+        public async Task<ActionResult<PagedResponse<IEnumerable<PostResponseDto>>>> GetAsync([FromQuery] int? pageSize, int page = 1)
         {
             pageSize = pageSize.GetValueOrDefault(DEFAULT_PAGE_SIZE);
-            var data = BlogPosts
+            // get paged result from posts table and sort them by newer posts
+            IEnumerable<Post> posts = await _blogDbContext.Posts
+                .AsNoTracking() // remove unnecessary tracking cost for larg data
                 .OrderByDescending(x => x.Created)
                 .Skip((page - 1) * pageSize.Value)
-                .Take(pageSize.Value);
-            _logger.LogInformation("{count} data sent to client", data.Count());
+                .Take(pageSize.Value)
+                .ToListAsync().ConfigureAwait(false);
+            // get total posts number
+            int totalPosts = await _blogDbContext.Posts.CountAsync().ConfigureAwait(false);
+            // map ef query result to a DTO for client
+            var postsDto = posts.Select(p => new PostResponseDto
+            {
+                ID = p.ID,
+                Author = p.Author,
+                Title = p.Title,
+                Body = p.Body,
+                Created = p.Created,
+                Description = p.Description,
+                Tags = p.Tags,
+                Thumbnail = p.Thumbnail
+            });
 
+            _logger.LogInformation("{count} data sent to client", posts.Count());
+            // return the paged response
             return Ok(new PagedResponse<IEnumerable<PostResponseDto>>
-                (data, page, pageSize.Value, total: BlogPosts.Count));
+                (postsDto, page, pageSize.Value, total: totalPosts));
         }
 
-        private static void SeedExampleData(int count = 20)
+        // GET api/<controller>/search/text
+        [HttpGet("search/{term}")]
+        public async Task<ActionResult<Response<IEnumerable<PostResponseDto>>>> Search(string term)
         {
-            Random rng = new Random();
-            BlogPosts = new List<PostResponseDto>();
-            for (int i = 0; i < count; i++)
+            var posts = await _blogDbContext.Posts.AsNoTracking()
+                .Where(x => x.Title.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(x => x.Created)
+                .ToListAsync().ConfigureAwait(false);
+            if (!posts.Any())
+                return NotFound(new Response<PostResponseDto>($"No Match Found with term {term}."));
+
+            var postsDto = posts.Select(p => new PostResponseDto
             {
-                BlogPosts.Add(new PostResponseDto
-                {
-                    Created = DateTime.Now,
-                    ID = Guid.NewGuid(),
-                    Author = ExampleBlogData.PostAuthors[i],
-                    Body = ExampleBlogData.PostBodies[i],
-                    Title = ExampleBlogData.PostTitles[i],
-                    Tags = new string[] { $"tag{rng.Next(1, 100_000)}" },
-                    Thumbnail = $"https://picsum.photos/200/200/?random={i}"
-                });
-            }
-
-            #region random generate
-            //IEnumerable<PostResponseDto> data = Enumerable.Range(1, pageSize).Select(index => new PostResponseDto
-            //{
-            //    Created = DateTime.Now.AddDays(index),
-            //    ID = rng.Next(1, 1000),
-            //    Author = ExampleBlogData.PostAuthors[rng.Next(ExampleBlogData.PostAuthors.Length)],
-            //    Body = ExampleBlogData.PostBodies[rng.Next(ExampleBlogData.PostBodies.Length)],
-            //    Title = ExampleBlogData.PostTitles[rng.Next(ExampleBlogData.PostTitles.Length)]
-            //});
-            #endregion
-
-
+                ID = p.ID,
+                Author = p.Author,
+                Title = p.Title,
+                Body = p.Body,
+                Created = p.Created,
+                Description = p.Description,
+                Tags = p.Tags,
+                Thumbnail = p.Thumbnail
+            });
+            return Ok(new Response<IEnumerable<PostResponseDto>>(postsDto));
         }
     }
 }
