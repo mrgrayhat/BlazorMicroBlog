@@ -1,0 +1,1 @@
+dotnet-ef database update -c BlogDbContext
