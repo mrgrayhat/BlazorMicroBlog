@@ -1,0 +1,79 @@
+﻿@page "/newpost"
+@using Application.Shared.DTO.Blog
+@inject HttpClient Http
+@inject NavigationManager navigator
+
+<div class="container">
+
+    <div class="row">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Blog</a></li>
+                <li class="breadcrumb-item active" aria-current="page">New Post</li>
+            </ol>
+        </nav>
+    </div>
+
+    <EditForm Model="PostDto" OnValidSubmit="HanleValidSubmit">
+        <DataAnnotationsValidator />
+        <div class="row mt-4">
+            <ValidationSummary />
+        </div>
+
+        <div class="row mt-4">
+            <label for="title">Author</label>
+            <InputText id="title" @bind-Value="PostDto.Author" class="form-control" />
+        </div>
+        <div class="row mt-4">
+            <label for="title">Title</label>
+            <InputText id="title" @bind-Value="PostDto.Title" class="form-control" />
+        </div>
+        <div class="row mt-4">
+            <label for="title">Body</label>
+            <InputTextArea id="body" @bind-Value="PostDto.Body" class="form-control" rows="10" />
+        </div>
+        <div class="row mt-4">
+            <label for="title">Thumbnail Photo</label>
+            <InputText id="thumbnail" @bind-Value="PostDto.Thumbnail" class="form-control" />
+        </div>
+        <div class="row mt-4">
+            <label for="title">Tags (Seperate by ;)</label>
+            <InputText id="thumbnail" @bind-Value="Tags" class="form-control" />
+        </div>
+        <div class="row mt-4">
+            <label for="title">Description</label>
+            <InputText id="description" @bind-Value="PostDto.Description" class="form-control" />
+        </div>
+        <div class="row mt-4">
+            <button class="btn btn-primary" type="submit">Publish</button>
+        </div>
+    </EditForm>
+</div>
+
+@functions{
+
+    PostDto PostDto { get; set; } = new PostDto();
+    private string Tags { get; set; }
+    protected async void HanleValidSubmit()
+    {
+        Console.WriteLine($"Post with title {PostDto.Title}, body {PostDto.Body} sent to server.");
+        if (string.IsNullOrEmpty(Tags))
+        {
+            PostDto.Tags = Tags;
+        }
+        var response = await Http.PostAsJsonAsync("/api/Blog", PostDto);
+        if (response.IsSuccessStatusCode)
+        {
+            var postId = await response.Content.ReadFromJsonAsync<Response<int>>();
+            Console.WriteLine($"Post added with id {postId.Data}, server response is {postId.Succeeded}");
+            navigator.NavigateTo($"/post/{postId.Data}");
+        }
+    }
+
+
+    //private async Task Add()
+    //{
+    //}
+
+}
