@@ -6,10 +6,10 @@ namespace Blazor.WebAssembly.ClientApp.Components
     public partial class Card
     {
         [Parameter]
-        public PostResponseDto Post { get; set; }
+        public PostResponseDto Post { get; set; } = new PostResponseDto();
 
         /// <summary>
-        /// truncate/trim Text for specific lenght and add ellipse
+        /// truncate/trim sentence words for specific lenght + add ellipse
         /// </summary>
         /// <param name="value">string to truncate</param>
         /// <param name="maxChars">max character to process</param>
@@ -28,6 +28,12 @@ namespace Blazor.WebAssembly.ClientApp.Components
             return returnValue;
         }
 
+        /// <summary>
+        /// character truncate
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="maxChars"></param>
+        /// <returns></returns>
         public static string Truncate(string value, int maxChars = 100)
         {
             return value.Length > maxChars ? value.Substring(0, maxChars) + "..." : value;

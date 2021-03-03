@@ -1,10 +1,11 @@
-﻿<div class="card" style="width: 18rem;">
+﻿
+<div class="card" style="width: 18rem;">
     <img class="card-img-top" width="200" height="200" src="@Post.Thumbnail" alt="thumbnail alt">
     <div class="card-body">
-        <h3 class="card-title">@Post.Title</h3>
+        <h3 class="card-title">@TruncateForDisplay(Post.Title, 25)</h3>
         <p class="card-text">
             @TruncateForDisplay(Post.Body)
-            <a href="/blog/@Post.ID" role="button" class="card-link">
+            <a href="/post/@Post.ID" target="_blank" role="button" class="card-link">
                 Read More
                 <i class=" oi oi-arrow-right" />
             </a>
@@ -13,9 +14,9 @@
     <div class="card-footer">
         <p class="card-text"><small class="text-muted">@Post.Created.ToLocalTime()</small></p>
         <p class="card-text">
-            @foreach (var tag in Post.Tags)
+            @if (!string.IsNullOrEmpty(Post.Tags))
             {
-                <small class="badge badge-pill badge-warning">#@tag </small>
+                <small class="badge badge-pill badge-warning"> #@Post.Tags </small>
             }
         </p>
         <blockquote class="blockquote mb-0">
