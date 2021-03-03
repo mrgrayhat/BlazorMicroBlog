@@ -58,7 +58,6 @@ namespace Application.Server.API.Infrastructure
 
         public static IServiceCollection AddCustomCors(this IServiceCollection services)
         {
-            services.AddCustomCors();
             services.AddCors(options =>
             {
                 options.AddPolicy("DefaultCorsPolicy",

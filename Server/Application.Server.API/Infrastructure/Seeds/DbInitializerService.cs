@@ -10,6 +10,7 @@ using Application.Server.API.Models.Blog;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Application.Server.API.Infrastructure.Seeds
 {
@@ -41,12 +42,10 @@ namespace Application.Server.API.Infrastructure.Seeds
 
         private static readonly HttpClient _httpClient;
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ILogger<DbInitializerService> _logger;
 
         public DbInitializerService(
-            IServiceScopeFactory scopeFactory, ILogger<DbInitializerService> logger)
+            IServiceScopeFactory scopeFactory)
         {
-            _logger = logger;
             _scopeFactory = scopeFactory;
         }
         /// <summary>
@@ -55,7 +54,6 @@ namespace Application.Server.API.Infrastructure.Seeds
         static DbInitializerService()
         {
             _httpClient = new HttpClient();
-            Serilog.Log.Information("{service} static constructor executed.", nameof(DbInitializerService));
         }
 
         /// <summary>
@@ -149,16 +147,11 @@ namespace Application.Server.API.Infrastructure.Seeds
         /// <returns>an image url that poin to it's online address</returns>
         public static async Task<string> GetRandomThumbnail(int? randomKey)
         {
+            Log.Information("Getting Online Random Thumbnail for seeding posts...");
             randomKey = randomKey.GetValueOrDefault(new Random().Next());
-            var watch = new Stopwatch();
-            watch.Start();
-            
             using HttpResponseMessage response = await _httpClient.GetAsync($"https://picsum.photos/200/200/?random={randomKey.Value}").ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            watch.Stop();
-            string responseUri = response.RequestMessage.RequestUri.ToString();
-            Serilog.Log.Information("successfuly got picture for seeding post from {uri}. response time: {time} ms.Thread Id {id}", responseUri, watch.Elapsed.Milliseconds, Thread.CurrentThread.ManagedThreadId);
-            return responseUri;
+            return response.RequestMessage.RequestUri.ToString();
         }
 
     }
