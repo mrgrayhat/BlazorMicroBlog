@@ -1,0 +1,87 @@
+﻿@page "/post/{id:int}"
+@using Application.Shared.DTO.Blog
+@inject HttpClient Http
+@inject ILogger<Post> logger
+
+<div class="container">
+    @if (PostDto is null)
+    {
+        <p class="text-center">Post Not Found!</p>
+    }
+    else
+    {
+        <div class="row">
+            <img class="img img-thumbnail" width="200" height="200" src="@PostDto.Thumbnail" alt="thumbnail alt">
+        </div>
+        <div class="row mt-4">
+            <h3 class="card-title">@PostDto.Title</h3>
+        </div>
+        <div class="row mt-4">
+            <p>
+                @PostDto.Body
+            </p>
+        </div>
+        <div class="row mt-4 align-items-center">
+            <div class="col-auto">
+                <small>
+                    Created:
+                    @PostDto.Created
+                </small>
+            </div>
+            <div class="col-auto">
+                <blockquote class="blockquote mb-0">
+                    <footer class="blockquote-footer">
+                        <small>
+                            Author: <a href="/users/@PostDto.Author" title="Author">@PostDto.Author</a>
+                        </small>
+                    </footer>
+                </blockquote>
+            </div>
+            <div class="col-auto">
+                @if (!string.IsNullOrEmpty(PostDto.Tags))
+                {
+                    <small class="badge badge-pill badge-warning"> #@PostDto.Tags </small>
+                }
+            </div>
+        </div>
+        <div class="row p-2">
+            <a href="#" class="card-link">
+                <i class="oi oi-thumb-up" /> 5
+            </a>
+            <a href="#" class="card-link">
+                <i class="oi oi-eye" /> 100
+            </a>
+            <a href="#" class="card-link">
+                <i class="oi oi-chat" /> 12
+            </a>
+        </div>
+    }
+</div>
+
+
+@functions {
+
+    [Parameter]
+    public int Id { get; set; }
+    public PostResponseDto PostDto { get; set; } = new PostResponseDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Get(Id);
+        StateHasChanged();
+    }
+
+    private async Task Get(int Id)
+    {
+        var response = await Http.GetFromJsonAsync<Response<PostResponseDto>>($"/api/Blog/{Id}");
+        if (response.Succeeded)
+        {
+            PostDto = response.Data;
+            logger.LogWarning($"[BlazorClient] response is {response.Succeeded}. Reason: {response.Message}");
+        }
+        else
+        {
+            logger.LogError($"[BlazorClient] response is {response.Succeeded}. Reason: {response.Message}");
+        }
+    }
+}
