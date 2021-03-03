@@ -10,6 +10,7 @@
     <PackageProjectUrl>https://github.com/mrgrayhat/Blazor.WebAssembly</PackageProjectUrl>
     <RepositoryUrl>https://github.com/mrgrayhat/Blazor.WebAssembly</RepositoryUrl>
     <NeutralLanguage>en</NeutralLanguage>
+    <UserSecretsId>371d7f55-27a7-40f0-bb3e-35d3df0e2c56</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
@@ -36,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Application.Shared\Application.Shared.csproj" />
+    <ProjectReference Include="..\..\Blazor.WebAssembly.ClientApp\Blazor.WebAssembly.ClientApp.csproj" />
   </ItemGroup>
 
 </Project>

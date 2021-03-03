@@ -24,7 +24,7 @@ namespace Application.Server.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers(opt =>
+            services.AddControllersWithViews(opt =>
             {
                 opt.ReturnHttpNotAcceptable = true;
                 opt.CacheProfiles.Add("30SecCache", new CacheProfile
@@ -36,6 +36,7 @@ namespace Application.Server.API
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     //options.JsonSerializerOptions.WriteIndented = true;
                 });
+            services.AddRazorPages();
             services.AddResponseCaching();
             services.AddInfrastructures(HostingEnvironment, Configuration);
         }
@@ -45,14 +46,28 @@ namespace Application.Server.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseWebAssemblyDebugging();
             }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseSerilogRequestLogging();
+
+            app.UseBlazorFrameworkFiles();
+            app.UseStaticFiles();
+
             app.UseCors((policy) =>
             {
                 policy.AllowAnyOrigin();
                 policy.AllowAnyMethod();
                 policy.AllowAnyHeader();
             });
-            app.UseSerilogRequestLogging();
+
             app.UseResponseCaching();
 
             app.UseRouting();
@@ -60,7 +75,9 @@ namespace Application.Server.API
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }
