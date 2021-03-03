@@ -1,28 +1,30 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
+    <Toast />
+
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+
+        <div class="main @(_darkMode ? "bg-dark" : null)">
+            <div class="top-row px-4">
+                <ThemeToggle OnDarkModeToggled="@HandleDarkModeToggled" />
+                <a href="https://github.com/mrgrayhat/" target="_blank" class="ml-md-auto">About Me</a>
+            </div>
+            <div class="content px-4">
+                @Body
+            </div>
+        </div>
     </div>
 
-    <div class="main @(_darkMode ? "bg-dark" : null)">
-        <div class="top-row px-4">
-            <ThemeToggle OnDarkModeToggled="@HandleDarkModeToggled" />
-            <a href="https://github.com/mrgrayhat/" target="_blank" class="ml-md-auto">About Me</a>
-        </div>
-        <div class="content px-4">
-            @Body
-        </div>
-    </div>
-</div>
-
-@code
+    @code
 {
 
-    private bool _darkMode = false;
+        private bool _darkMode = false;
 
-    private void HandleDarkModeToggled(bool isDarkMode)
-    {
-        _darkMode = isDarkMode;
+        private void HandleDarkModeToggled(bool isDarkMode)
+        {
+            _darkMode = isDarkMode;
+        }
     }
-}

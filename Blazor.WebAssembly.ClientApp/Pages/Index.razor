@@ -1,4 +1,15 @@
 ﻿@page "/"
+@inject ToastService toastService
+
+<h1>Test Toast Notifictaions! </h1>
+<div class="row">
+    <div class="col">
+        <button class="btn btn-info" @onclick="@(() => toastService.ShowToast("I'm an INFO message", ToastLevel.Info))">Info Toast</button>
+        <button class="btn btn-success" @onclick="@(() => toastService.ShowToast("I'm a SUCCESS message", ToastLevel.Success))">Success Toast</button>
+        <button class="btn btn-warning" @onclick="@(() => toastService.ShowToast("I'm a WARNING message", ToastLevel.Warning))">Warning Toast</button>
+        <button class="btn btn-danger" @onclick="@(() => toastService.ShowToast("I'm an ERROR message", ToastLevel.Error))">Error Toast</button>
+    </div>
+</div>
 
 <h1>Welcome to your simple blazor blog app.</h1>
 <PostList />
