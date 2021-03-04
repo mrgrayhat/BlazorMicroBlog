@@ -13,8 +13,10 @@ namespace Blazor.WebAssembly.ClientApp
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
-
+            // register app taost notifications service.
             builder.Services.AddScoped<ToastService>();
+            // if you want to run blazor client standalone (only wasm), set uri to server(api), otherwise server will proxy it's self address (Hosted Mode)..
+            // default is http://127.0.0.1:5001 | https
             builder.Services.AddScoped(sp => new HttpClient
             {
                 BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)

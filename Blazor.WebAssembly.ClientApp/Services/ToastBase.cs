@@ -5,6 +5,11 @@ namespace Blazor.WebAssembly.ClientApp.Services
 {
     public class ToastBase : ComponentBase, IDisposable
     {
+        private const string SUCCESS = "Success";
+        private const string WARNING = "Warning";
+        private const string ERROR = "Error";
+        private const string INFO = "Info";
+
         [Inject] ToastService ToastService { get; set; }
 
         protected string Heading { get; set; }
@@ -36,25 +41,25 @@ namespace Blazor.WebAssembly.ClientApp.Services
         {
             switch (level)
             {
-                case ToastLevel.Info:
-                    BackgroundCssClass = "bg-info";
-                    IconCssClass = "info";
-                    Heading = "Info";
-                    break;
-                case ToastLevel.Success:
+                case ToastLevel.SUCCESS:
                     BackgroundCssClass = "bg-success";
                     IconCssClass = "check";
-                    Heading = "Success";
+                    Heading = SUCCESS;
                     break;
-                case ToastLevel.Warning:
+                case ToastLevel.WARNING:
                     BackgroundCssClass = "bg-warning";
                     IconCssClass = "exclamation";
-                    Heading = "Warning";
+                    Heading = WARNING;
                     break;
-                case ToastLevel.Error:
+                case ToastLevel.ERROR:
                     BackgroundCssClass = "bg-danger";
                     IconCssClass = "times";
-                    Heading = "Error";
+                    Heading = ERROR;
+                    break;
+                case ToastLevel.INFO:
+                    BackgroundCssClass = "bg-info";
+                    IconCssClass = "info";
+                    Heading = INFO;
                     break;
             }
 

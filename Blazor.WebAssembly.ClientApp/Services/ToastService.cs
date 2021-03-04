@@ -7,6 +7,8 @@ namespace Blazor.WebAssembly.ClientApp.Services
     {
         public event Action<string, ToastLevel> OnShow;
         public event Action OnHide;
+
+        private const int INTERVAL = 5000;
         private Timer Countdown;
 
         public void ShowToast(string message, ToastLevel level)
@@ -34,9 +36,8 @@ namespace Blazor.WebAssembly.ClientApp.Services
         {
             if (Countdown == null)
             {
-                Countdown = new Timer(5000);
+                Countdown = new Timer(INTERVAL);
                 Countdown.Elapsed += HideToast;
-                Countdown.AutoReset = false;
             }
         }
 

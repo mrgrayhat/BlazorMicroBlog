@@ -2,6 +2,7 @@
 @using Application.Shared.DTO.Blog
 @inject HttpClient Http
 @inject NavigationManager navigator
+@inject ToastService toastService
 
 <div class="container">
 
@@ -67,6 +68,7 @@
         {
             var postId = await response.Content.ReadFromJsonAsync<Response<int>>();
             Console.WriteLine($"Post added with id {postId.Data}, server response is {postId.Succeeded}");
+            toastService.ShowToast("Post Published Successfully!", ToastLevel.SUCCESS);
             navigator.NavigateTo($"/post/{postId.Data}");
         }
     }

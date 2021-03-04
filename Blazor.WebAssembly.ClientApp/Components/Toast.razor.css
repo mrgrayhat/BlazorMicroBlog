@@ -7,7 +7,7 @@
     width: 25rem;
     top: 2rem;
     border-radius: 1rem;
-    left: 50%;
+    left: 72%;
 }
 
 .toast-icon {
@@ -32,7 +32,7 @@
 .toast-visible {
     display: flex;
     flex-direction: row;
-    animation: fadein 1.5s;
+    animation: fadein 5s;
 }
 
 @keyframes fadein {

@@ -2,9 +2,9 @@
 {
     public enum ToastLevel
     {
-        Info,
-        Success,
-        Warning,
-        Error
+        INFO,
+        SUCCESS,
+        WARNING,
+        ERROR
     }
 }
