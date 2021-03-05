@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.WebAssembly.ClientAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Server.API", "Server\Application.Server.API\Application.Server.API.csproj", "{9214B043-5755-48F2-953E-C43CDCF4A190}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Shared", "Application.Shared\Application.Shared.csproj", "{5C1E88EC-F47B-475E-97B4-EBB48C2B2379}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{9214B043-5755-48F2-953E-C43CDCF4A190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9214B043-5755-48F2-953E-C43CDCF4A190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9214B043-5755-48F2-953E-C43CDCF4A190}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C1E88EC-F47B-475E-97B4-EBB48C2B2379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C1E88EC-F47B-475E-97B4-EBB48C2B2379}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C1E88EC-F47B-475E-97B4-EBB48C2B2379}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C1E88EC-F47B-475E-97B4-EBB48C2B2379}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
