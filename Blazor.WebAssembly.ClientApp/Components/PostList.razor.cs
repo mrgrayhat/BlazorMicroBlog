@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Application.Shared.DTO.Blog;
-using Application.Shared.Wrappers;
+using MicroBlog.BlogClient;
 using Microsoft.AspNetCore.Components;
 
 namespace Blazor.WebAssembly.ClientApp.Components
 {
     public partial class PostList
     {
-        private IEnumerable<PostResponseDto> PostsList { get; set; }
+        [Inject]
+        private IBlogClient _blogClient { get; set; }
+
+        private PagedResponseOfIEnumerableOfPostResponseDto PostsList { get; set; }
         public Paging Paging { get; set; } = new Paging();
 
         public int Page { get; set; } = 1;
@@ -24,14 +24,12 @@ namespace Blazor.WebAssembly.ClientApp.Components
 
         private async Task RefreshPostsList()
         {
-            var response = await Http.GetFromJsonAsync<PagedResponse<IEnumerable<PostResponseDto>>>($"/api/Blog?page={Page}&pageSize={PageSize}");
+            PostsList = await _blogClient.IndexAsync(PageSize, Page).ConfigureAwait(false);
 
-            PostsList = response.Data;
-
-            Paging.CurrentPage = response.PageNumber;
-            Paging.PageSize = response.PageSize;
-            Paging.TotalCount = response.Total;
-            Paging.TotalPages = (int)Math.Ceiling(response.Total / (double)response.PageSize);
+            Paging.CurrentPage = PostsList.PageNumber;
+            Paging.PageSize = PostsList.PageSize;
+            Paging.TotalCount = PostsList.Total;
+            Paging.TotalPages = (int)Math.Ceiling(PostsList.Total / (double)PostsList.PageSize);
             StateHasChanged();
         }
 
@@ -52,33 +50,24 @@ namespace Blazor.WebAssembly.ClientApp.Components
             for (var i = 0; i < max; i++)
             {
                 int rnd = rng.Next();
-                using var response = await Http.GetAsync($"https://picsum.photos/200/200/?random={rnd}").ConfigureAwait(false);
-                response.EnsureSuccessStatusCode();
-                
-                await Http.PostAsJsonAsync("/api/Blog", new PostDto
+                var postId = await _blogClient.PostAsync(new PostDto
                 {
                     Author = $"admin",
                     Body = $@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. {rnd}",
                     Title = $"post {rnd}",
                     Tags = $"tag{rnd};tag{i + rnd}",
-                    Thumbnail = response.RequestMessage.RequestUri.ToString()
+                    Thumbnail = $"https://picsum.photos/200/200/?random={rnd}"
                 });
             }
 
             await RefreshPostsList();
         }
 
-        private async Task DeletePost(Guid id)
-        {
-            await Http.DeleteAsync($"/api/Blog/{id}");
-            await RefreshPostsList();
-        }
-
         private async Task DeleteAllPosts()
         {
-            foreach (var post in PostsList)
+            foreach (var post in PostsList.Data)
             {
-                await Http.DeleteAsync($"/api/Blog/{post.ID}");
+                await _blogClient.DeleteAsync(post.Id);
             }
 
             await RefreshPostsList();
