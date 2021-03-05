@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Server.API.Infrastructure.Contexts;
 using Application.Server.API.Models.Blog;
-using Application.Shared.DTO.Blog;
-using Application.Shared.Wrappers;
+using Application.Server.DTOs.Blog;
+using Application.Server.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -55,6 +55,7 @@ namespace Application.Server.API.Controllers
                 Title = p.Title,
                 Body = p.Body,
                 Created = p.Created,
+                Modified = p.Modified,
                 Description = p.Description,
                 Tags = p.Tags,
                 Thumbnail = p.Thumbnail
@@ -89,6 +90,7 @@ namespace Application.Server.API.Controllers
                 Description = post.Description,
                 Thumbnail = post.Thumbnail,
                 Created = post.Created,
+                Modified = post.Modified,
                 Tags = post.Tags
             };
             return Ok(new Response<PostResponseDto>(postDto));
@@ -141,6 +143,7 @@ namespace Application.Server.API.Controllers
             post.Body = postDto.Body;
             post.Description = postDto.Description;
             post.Tags = postDto.Tags;
+            post.Modified = DateTime.Now;
             post.Thumbnail = postDto.Thumbnail;
 
             _blogDbContext.Posts.Update(post);
@@ -193,6 +196,7 @@ namespace Application.Server.API.Controllers
                 Body = p.Body,
                 Created = p.Created,
                 Description = p.Description,
+                Modified = p.Modified,
                 Tags = p.Tags,
                 Thumbnail = p.Thumbnail
             });
