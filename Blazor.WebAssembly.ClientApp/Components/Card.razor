@@ -1,11 +1,11 @@
 ﻿
 <div class="card" style="width: 18rem;">
-    <img class="card-img-top" width="200" height="200" src="@Post.Thumbnail" alt="thumbnail alt">
+    <img class="card-img-top" width="200" height="200" src="@Post.Thumbnail" alt="@Truncate(Post.Title, 10)">
     <div class="card-body">
-        <h3 class="card-title">@TruncateForDisplay(Post.Title, 25)</h3>
+        <h3 class="card-title">@Truncate(Post.Title, 25)</h3>
         <p class="card-text">
-            @TruncateForDisplay(Post.Body)
-            <a href="/post/@Post.ID" target="_blank" role="button" class="card-link">
+            @Truncate(Post.Body)
+            <a href="/post/@Post.Id" target="_self" role="button" class="card-link">
                 Read More
                 <i class=" oi oi-arrow-right" />
             </a>
@@ -13,6 +13,10 @@
     </div>
     <div class="card-footer">
         <p class="card-text"><small class="text-muted">@Post.Created.ToLocalTime()</small></p>
+        @if (Post.Modified != null)
+        {
+            <p class="card-text"><small class="text-muted">@Post.Modified.Value.ToLocalTime()</small></p>
+        }
         <p class="card-text">
             @if (!string.IsNullOrEmpty(Post.Tags))
             {
@@ -28,7 +32,6 @@
         </blockquote>
     </div>
     <div class="card-body">
-
         <a href="#" class="card-link">
             <i class="oi oi-thumb-up" />
             <small class="small"> 5 </small>
@@ -41,6 +44,19 @@
             <i class="oi oi-chat" />
             <small class="small"> 12 </small>
         </a>
+        <div class="row">
+            <div class="col-auto">
+                <button class="btn btn-sm btn-danger" @onclick=@(async () => await (DeletePost(Post.Id)))>
+                    Delete
+                    <i class="oi oi-delete" />
+                </button>
+                <button class="card-link btn btn-sm btn-warning" @onclick="()=>EditPost(Post.Id)">
+                    Edit
+                    <i class="oi oi-pencil" />
+                </button>
+            </div>
+        </div>
+
     </div>
 </div>
 

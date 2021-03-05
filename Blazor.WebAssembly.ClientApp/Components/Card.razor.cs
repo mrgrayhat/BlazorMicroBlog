@@ -1,4 +1,6 @@
-﻿using Application.Shared.DTO.Blog;
+﻿using System.Threading.Tasks;
+using Blazor.WebAssembly.ClientApp.Services;
+using MicroBlog.BlogClient;
 using Microsoft.AspNetCore.Components;
 
 namespace Blazor.WebAssembly.ClientApp.Components
@@ -6,7 +8,25 @@ namespace Blazor.WebAssembly.ClientApp.Components
     public partial class Card
     {
         [Parameter]
-        public PostResponseDto Post { get; set; } = new PostResponseDto();
+        public PostResponseDto Post { get; set; }
+        [Inject]
+        private NavigationManager Navigation { get; set; }
+        [Inject]
+        private IBlogClient _blogClient { get; set; }
+        [Inject]
+        private ToastService _toastService { get; set; }
+
+        private void EditPost(int id)
+        {
+            Navigation.NavigateTo($"/edit/{id}");
+        }
+        private async Task DeletePost(int id)
+        {
+            await _blogClient.DeleteAsync(id).ConfigureAwait(false);
+            _toastService.ShowToast($"Post with id {id} Deleted Successfully", ToastLevel.SUCCESS);
+            StateHasChanged();
+        }
+
 
         /// <summary>
         /// truncate/trim sentence words for specific lenght + add ellipse
