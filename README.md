@@ -1,32 +1,42 @@
 # .Net 5 Blazor WebAssembly MicroBlog WebApplication
 
 this is practical project made with .Net 5 Blazor web assembly as client app, And Asp.net Core API as server side. 
-The goal is to demonstrate the capabilities of the Blazor.net. Also explain the possibility of designing and building the user interface of web and mobile applications with PWA capability.
+The goal is to demonstrate the capabilities of the Blazor.Net and wasm. Also explain the possibility of designing and building the user interface of web, desktop and mobile applications with PWA capability.
 
-In this project, I just focused on building the user interface by blazor. So I wrote it with the blazor client side (WASM) model.
-Also the blazor server side model that will be added in the future.
+In this project, I just focused on building the user interface by blazor. So I wrote it with the blazor client side (WASM) model (Asp.NetCore Hosted).
+
 ## Screen Shots:
-![Blog Posts - Index](Documents/screenshot/Index_FullPageScreenshot.png?raw=true)
+#### Browser full page:
+![Web Blog - Index](Documents/screenshot/Index_FullPageScreenshot.png?raw=true)
+#### PWA app (desktop):
+![PWA Blog - Index](Documents/screenshot/MicroBlog_PwaApp_Index.png?raw=true)
+
 
 ## How to use:
+By default, the program runs under Asp.Net Core Hosted Mode.
+#### ** Note: ** The Server App Will Host and Proxy Blazor client app inside it's self. so you don't need to run both projects. Just execute api exe file in windows, or dotnet api.dll file in others like linux.
+#### First time you run the project, server app will send Blazor WebAssembly App to you (download & cache in browser). After that, it only sends data transfer requests.
+  In No Asp.NetCore Hosted Scenario, you must remove blazor services from server startup file. so you need to run webassembly static files manually (CDN's, Github Pages, etc)
+
 ### Install .Net5 SDK
 
 - run server (Application.Server.API) project
   - cd Server\Application.Server.API
   - dotnet run
-- run client (Blazor.WebAssembly.ClientApp)
-  - cd Blazor.WebAssembly.ClientApp
-  - dotnet run
-- Open the http://localhost:5000/ in your browser (Firefox is recommended).
+- Open the https://localhost:5001/ in your browser (Edge Or Firefox is recommended.)
+
+If you want to test PWA App, You must publish project and run production output. (dotnet publish -c Release)
 
 ## Extra notes:
 ### The Server API :
 #### Provide a simple blog service for you. This service provides the following capabilities to your clients:
- - Includes a controller and CRUD (Create, Read, Update, Delete) related functions via the Http protocol and REST
- - Paged output for receiving large amounts of data (PagedResponse<T>). Such as receiving blog posts based on page and number of records (in JSON format).
-  - to get blog post's for example: http://localhost:5001/api/blog?page=1&pageSize=10 , for search in posts: /api/blog/search/{term}
- - Basic Separation of Request(input) and Response(output) models via Dto's
- 
+ - Includes a controller and CRUD (Create, Read, Update, Delete) related functions via the Http protocol and **REST**
+ - **Paged** output for receiving large amounts of data (PagedResponse<T>). Such as receiving blog posts based on page and number of records (in JSON format).
+  - to get blog post's for example: https://localhost:5001/api/blog?page=1&pageSize=10 , for search in posts: /api/blog/search/{term
+ - **Swagger** API Explorer and Documentation to test and see api features: https://localhost:5001/swagger
+ - nswag client code generator configs for blazor client.
+ - Basic Separation of Request(input) and Response(output) models via **Dto's**
+  
  ### Blazor WASM (PWA Front-End Application)
  #### Provide Web Assembly client, with the ability to download and run in the user's browser. Server independent
  Include pages for displaying and managing blog posts, Communicate with the server api's
@@ -45,15 +55,17 @@ Also the blazor server side model that will be added in the future.
   You can add more example post't by click on "Fill with demo data" button. The Blog contain some post's as default.
   
   ### Project TODO List:
-  - [ ] Ability to add new post -> doing
+  - [x] Add Swagger & API Documentation -> Done
+  - [x] Add Nswag client generator -> doing
+  - [x] Ability to add new post -> Done
   - [ ] Ability to upload a file and insert pictures for post
   - [ ] Ability to Edit a post -> doing
   - [ ] Ability to remove a post -> doing
-  - [ ] Ability to view a post -> doing
+  - [x] Ability to view a post -> doing
   - [ ] Ability to like a post, increase view per each viewer
   - [ ] Ability to comment in posts
-  - [ ] Ability to store data into a database (EF Core + sqlite db) -> doing
+  - [x] Ability to store data into a database (EF Core + sqlite db) -> Done
   - [ ] In Memory Caching
-  - [ ] Make Responsive PWA App for desktop & mobiles -> doing
-  - [ ] Add Asp.Net Core Hosted Model for easier testing/publishing pwa features
+  - [x] Make Responsive PWA App for desktop & mobiles -> Done
+  - [x] Add Asp.Net Core Hosted Model for easier testing/publishing pwa features -> Done
   - [ ] Add Ability for using web assembly publish, Independent of .NET Hosting
