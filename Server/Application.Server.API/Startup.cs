@@ -33,11 +33,7 @@ namespace Application.Server.API
                 {
                     Duration = 30
                 });
-            }).AddJsonOptions((options) =>
-                {
-                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                    //options.JsonSerializerOptions.WriteIndented = true;
-                });
+            });
             services.AddRazorPages();
             services.AddResponseCaching();
             services.AddInfrastructures(HostingEnvironment, Configuration);
