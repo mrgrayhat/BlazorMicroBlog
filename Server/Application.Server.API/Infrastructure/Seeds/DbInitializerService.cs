@@ -29,7 +29,8 @@ namespace Application.Server.API.Infrastructure.Seeds
         /// <param name="addExtra">will generate more posts if true, otherwise just add default post</param>
         /// <returns></returns>
         Task SeedData(bool addExtra = true);
-        // <summary>
+
+        /// <summary>
         /// add more demo data
         /// </summary>
         /// <param name="max">max demo data to generate </param>
