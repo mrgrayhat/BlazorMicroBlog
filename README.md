@@ -5,12 +5,13 @@ The goal is to demonstrate the capabilities of the Blazor.Net and wasm. Also exp
 
 In this project, I just focused on building the user interface by blazor. So I wrote it with the blazor client side (WASM) model (Asp.NetCore Hosted).
 
-## Screen Shots:
-#### Browser full page:
+### Screen Shots:
+ - Browser full page:
 ![Web Blog - Index](Documents/screenshot/Index_FullPageScreenshot.png?raw=true)
-#### PWA app (desktop):
+ - PWA app (desktop):
 ![PWA Blog - Index](Documents/screenshot/MicroBlog_PwaApp_Index.png?raw=true)
-
+ - View Post Page:
+![View Post](Documents/screenshot/PWA_ViewPostPage.PNG?raw=true)
 
 ## How to use:
 By default, the program runs under Asp.Net Core Hosted Mode.
@@ -23,7 +24,7 @@ By default, the program runs under Asp.Net Core Hosted Mode.
 - run server (MicroBlog.Server) project
   - cd src\Server
   - dotnet run
-- Open the https://localhost:5001/ in your browser (Edge Or Firefox are recommended.)
+- Open the https://localhost:5001/ in your browser (Edge Or Chrome is recommended. in my test, firefox didn't show pwa install button!)
 
 If you want to test PWA App, You must publish project and run production output. (dotnet publish -c Release)
 
