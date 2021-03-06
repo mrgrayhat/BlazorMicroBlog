@@ -9,7 +9,7 @@ In this project, I just focused on building the user interface by blazor. So I w
  - Browser full page:
 ![Web Blog - Index](Documents/screenshot/Index_FullPageScreenshot.png?raw=true)
  - PWA app (desktop):
-![PWA Blog - Index](Documents/screenshot/MicroBlog_PwaApp_Index.png?raw=true)
+![PWA Blog - Index](Documents/screenshot/MicroBlog_PwaApp_IndexPage.png?raw=true)
  - View Post Page:
 ![View Post](Documents/screenshot/PWA_ViewPostPage.PNG?raw=true)
 
