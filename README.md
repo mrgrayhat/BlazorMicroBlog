@@ -32,9 +32,9 @@ If you want to test PWA App, You must publish project and run production output.
 #### Provide a simple blog service for you. This service provides the following capabilities to your clients:
  - Includes a controller and CRUD (Create, Read, Update, Delete) related functions via the Http protocol and **REST**
  - **Paged** output for receiving large amounts of data (PagedResponse<T>). Such as receiving blog posts based on page and number of records (in JSON format).
-  - to get blog post's for example: https://localhost:5001/api/blog?page=1&pageSize=10 , for search in posts: /api/blog/search/{term
+  - to get blog post's for example: https://localhost:5001/api/blog?page=1&pageSize=10 , for search in posts: /api/blog/search/{term}
  - **Swagger** API Explorer and Documentation to test and see api features: https://localhost:5001/swagger
- - nswag client code generator configs for blazor client.
+ - nswag client code generator & open api config for blazor client (Generate CSharpClient including models and services).
  - Basic Separation of Request(input) and Response(output) models via **Dto's**
   
  ### Blazor WASM (PWA Front-End Application)
@@ -55,17 +55,30 @@ If you want to test PWA App, You must publish project and run production output.
   You can add more example post't by click on "Fill with demo data" button. The Blog contain some post's as default.
   
   ### Project TODO List:
+  - Pre Release 0.8-beta1: -> Done
   - [x] Add Swagger & API Documentation -> Done
   - [x] Add Nswag client generator -> doing
+  - [x] Define the post thumbnail/picture
   - [x] Ability to add new post -> Done
-  - [ ] Ability to upload a file and insert pictures for post
   - [x] Ability to Edit a post -> done
   - [x] Ability to remove a post -> done
   - [x] Ability to view a post -> done
+  - [x] Ability to store data into a database (EF Core + sqlite db) -> Done
+  - [x] Make Fully Responsive PWA App for desktop & mobiles -> Done
+  - [ ] Add Asp.Net Core Hosted Model for easier testing/publishing pwa features -> Done
+  - Release Version 1.0:
+  - [ ] Ability to upload files
+  - [ ] Ability to insert Markups, Content Editor
+  - [ ] Ability to insert images/media into the post body
   - [ ] Ability to like a post, increase view per each viewer
   - [ ] Ability to comment in posts
-  - [x] Ability to store data into a database (EF Core + sqlite db) -> Done
   - [ ] In Memory Caching
-  - [x] Make Responsive PWA App for desktop & mobiles -> Done
-  - [x] Add Asp.Net Core Hosted Model for easier testing/publishing pwa features -> Done
+  - [ ] Make Fully Responsive PWA App for desktop & mobiles
+  - [ ] Implement Authentication & Authorization, Basic Security Concepts
+  - [ ] Role Based Accounting
+  - Release Version 2.0:
+  - [ ] Admin/Management Dashboard
+  - [ ] User Dashboard
+  - [ ] ReDesign User Interface
+  - [ ] InApp Configure Blog Settings
   - [ ] Add Ability for using web assembly publish, Independent of .NET Hosting
