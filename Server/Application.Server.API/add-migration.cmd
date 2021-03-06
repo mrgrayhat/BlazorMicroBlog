@@ -1,1 +1,0 @@
-dotnet-ef migrations add Init_Blog -c BlogDbContext

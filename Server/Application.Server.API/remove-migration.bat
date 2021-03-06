@@ -1,1 +1,0 @@
-dotnet ef migrations remove -c BlogDbContext
