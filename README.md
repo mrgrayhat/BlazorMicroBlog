@@ -20,10 +20,10 @@ By default, the program runs under Asp.Net Core Hosted Mode.
 
 ### Install .Net5 SDK
 
-- run server (Application.Server.API) project
-  - cd Server\Application.Server.API
+- run server (MicroBlog.Server) project
+  - cd src\Server
   - dotnet run
-- Open the https://localhost:5001/ in your browser (Edge Or Firefox is recommended.)
+- Open the https://localhost:5001/ in your browser (Edge Or Firefox are recommended.)
 
 If you want to test PWA App, You must publish project and run production output. (dotnet publish -c Release)
 
@@ -59,9 +59,9 @@ If you want to test PWA App, You must publish project and run production output.
   - [x] Add Nswag client generator -> doing
   - [x] Ability to add new post -> Done
   - [ ] Ability to upload a file and insert pictures for post
-  - [ ] Ability to Edit a post -> doing
-  - [ ] Ability to remove a post -> doing
-  - [x] Ability to view a post -> doing
+  - [x] Ability to Edit a post -> done
+  - [x] Ability to remove a post -> done
+  - [x] Ability to view a post -> done
   - [ ] Ability to like a post, increase view per each viewer
   - [ ] Ability to comment in posts
   - [x] Ability to store data into a database (EF Core + sqlite db) -> Done
