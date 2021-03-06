@@ -1,0 +1,72 @@
+﻿
+<div class="card" style="width: 18rem;">
+    <img class="card-img-top" width="200" height="200" src="@Post.Thumbnail" alt="@Truncate(Post.Title, 10)">
+    <div class="card-body">
+        <h3 class="card-title">@Truncate(Post.Title, 25)</h3>
+        <p class="card-text">
+            @Truncate(Post.Body)
+            <a href="/post/@Post.Id" target="_self" role="button" class="card-link">
+                Read More
+                <i class=" oi oi-arrow-right" />
+            </a>
+        </p>
+    </div>
+    <div class="card-footer">
+        <p class="card-text">
+            <small class="text-muted">
+                @Post.Created.ToLocalTime()
+            </small>
+        </p>
+        @if (Post.Modified.HasValue)
+        {
+            <p class="card-text">
+                <small class="text-muted">@Post.Modified.Value</small>
+            </p>
+        }
+        @if (!string.IsNullOrEmpty(Post.Tags))
+        {
+            <p class="card-text">
+                <small class="badge badge-pill badge-warning"> #@Post.Tags </small>
+            </p>
+        }
+        <blockquote class="blockquote mb-0">
+            <footer class="blockquote-footer">
+                <small>
+                    Author: <a href="/users/@Post.Author" title="Author">@Post.Author</a>
+                </small>
+            </footer>
+        </blockquote>
+    </div>
+    <div class="card-body">
+        <a href="#" class="card-link">
+            <i class="oi oi-thumb-up" />
+            <small class="small"> 5 </small>
+        </a>
+        <a href="#" class="card-link">
+            <i class="oi oi-eye" />
+            <small class="small"> 100 </small>
+        </a>
+        <a href="#" class="card-link">
+            <i class="oi oi-chat" />
+            <small class="small"> 12 </small>
+        </a>
+        <div class="row">
+            <div class="col-auto">
+                <button class="btn btn-sm btn-danger" @onclick=@(async () => await (DeletePost(Post.Id)))>
+                    Delete
+                    <i class="oi oi-delete" />
+                </button>
+                <button class="card-link btn btn-sm btn-warning" @onclick="()=>EditPost(Post.Id)">
+                    Edit
+                    <i class="oi oi-pencil" />
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+
+
+}

@@ -1,0 +1,90 @@
+﻿@page "/post/{id:int}"
+@inject IBlogClient BlogClient
+@inject ILogger<Post> logger
+
+<div class="container">
+    @if (PostDto is null)
+    {
+        <p class="text-center">Loading ...</p>
+    }
+    else
+    {
+
+        @if (PostDto.Data is null)
+        {
+            <p class="text-center">Post Not Found!</p>
+        }
+        else
+        {
+            <div class="row">
+                <img class="img img-thumbnail" width="200" height="200" src="@PostDto.Data.Thumbnail" alt="thumbnail alt">
+            </div>
+            <div class="row mt-4">
+                <h3 class="card-title">@PostDto.Data.Title</h3>
+            </div>
+            <div class="row mt-4">
+                <p>
+                    @PostDto.Data.Body
+                </p>
+            </div>
+            <div class="row mt-4 align-items-center">
+                <div class="col-auto">
+                    <small>
+                        Created:
+                        @PostDto.Data.Created
+                    </small>
+                </div>
+                <div class="col-auto">
+                    <blockquote class="blockquote mb-0">
+                        <footer class="blockquote-footer">
+                            <small>
+                                Author: <a href="/users/@PostDto.Data.Author" title="Author">@PostDto.Data.Author</a>
+                            </small>
+                        </footer>
+                    </blockquote>
+                </div>
+                <div class="col-auto">
+                    @if (!string.IsNullOrEmpty(PostDto.Data.Tags))
+                    {
+                        <small class="badge badge-pill badge-warning"> #@PostDto.Data.Tags </small>
+                    }
+                </div>
+            </div>
+            <div class="row p-2">
+                <a href="#" class="card-link">
+                    <i class="oi oi-thumb-up" /> 5
+                </a>
+                <a href="#" class="card-link">
+                    <i class="oi oi-eye" /> 100
+                </a>
+                <a href="#" class="card-link">
+                    <i class="oi oi-chat" /> 12
+                </a>
+            </div>
+        }
+    }
+</div>
+
+
+@functions {
+
+    [Parameter]
+    public int Id { get; set; }
+    public ResponseOfPostResponseDto PostDto { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Get(Id);
+        StateHasChanged();
+    }
+
+    private async Task Get(int Id)
+    {
+        PostDto = new ResponseOfPostResponseDto();
+        PostDto = await BlogClient.GetByIdAsync(Id).ConfigureAwait(false);
+        if (!PostDto.Succeeded)
+        {
+            logger.LogError($"response is {PostDto.Succeeded}. Reason: {PostDto.Message}");
+        }
+    }
+}

@@ -1,0 +1,18 @@
+﻿@page "/"
+@inject ToastService toastService
+
+<h1>Test Toast Notifictaions! </h1>
+<div class="row">
+    <div class="col">
+        <button class="btn btn-info" @onclick="@(() => toastService.ShowToast("I'm an INFO message", ToastLevel.INFO))">Info Toast</button>
+        <button class="btn btn-success" @onclick="@(() => toastService.ShowToast("I'm a SUCCESS message", ToastLevel.SUCCESS))">Success Toast</button>
+        <button class="btn btn-warning" @onclick="@(() => toastService.ShowToast("I'm a WARNING message", ToastLevel.WARNING))">Warning Toast</button>
+        <button class="btn btn-danger" @onclick="@(() => toastService.ShowToast("I'm an ERROR message", ToastLevel.ERROR))">Error Toast</button>
+    </div>
+</div>
+
+<h1>Welcome to Blazor MicroBlog app.</h1>
+
+<PostList />
+
+<SurveyPrompt Title="How is Micro Blog working?" />

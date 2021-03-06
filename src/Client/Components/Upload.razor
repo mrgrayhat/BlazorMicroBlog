@@ -1,0 +1,51 @@
+﻿@*@inject IUploadClient UploadClient*@
+@inject ToastService toastService
+
+
+<div class="row mt-4">
+    <InputFile class="form-control-file" OnChange="@HandleSelected" />
+    @if (ImgUrl != null)
+    {
+        <div>
+            <img src="@ImgUrl" style="width:300px" />
+        </div>
+    }
+    <i class="oi oi-data-transfer-upload" />
+    <label for="thumbnail"> Thumbnail Photo</label>
+    <InputText name="thumbnail" id="thumbnail" @bind-Value="ImgUrl" class="form-control" />
+</div>
+
+@code {
+    public EventCallback<string> OnChange { get; set; }
+    [Parameter]
+    public string ImgUrl { get; set; }
+
+
+    protected async Task HandleSelected(InputFileChangeEventArgs e)
+    {
+        var files = e.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            if (file != null)
+            {
+                var resizedImage = await file.RequestImageFileAsync("image/png", 300, 500);
+                using var memoryStream = resizedImage.OpenReadStream(resizedImage.Size);
+                var content = new MultipartFormDataContent();
+                content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+                content.Add(new StreamContent(memoryStream, Convert.ToInt32(resizedImage.Size)), "image", file.Name);
+                //var result = await UploadClient.PostAsync(new FileParameter(memoryStream));
+                //if (result.Succeeded)
+                //{
+                //    ImgUrl = result.Data;
+                //    toastService.ShowToast("Image uploaded successfully", ToastLevel.SUCCESS);
+                //}
+                //else
+                //{
+                //    toastService.ShowToast($"Failed to upload image. {result.Message}", ToastLevel.ERROR);
+                //}
+
+            }
+        }
+    }
+
+}

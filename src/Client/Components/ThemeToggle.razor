@@ -1,0 +1,17 @@
+﻿<button @onclick="Toggle" type="button" class="btn btn-secondary @(_darkMode?"btn-dark":"btn-light")">
+    @(_darkMode ? "Light":"Dark") Mode
+</button>
+
+@code {
+
+    private bool _darkMode = false;
+
+    [Parameter]
+    public EventCallback<bool> OnDarkModeToggled { get; set; }
+
+    private void Toggle()
+    {
+        _darkMode = !_darkMode;
+        OnDarkModeToggled.InvokeAsync(_darkMode);
+    }
+}
