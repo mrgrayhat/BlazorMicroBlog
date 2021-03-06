@@ -24,7 +24,7 @@ namespace MicroBlog.Blazor.Client.Components
         {
             await _blogClient.DeleteAsync(id).ConfigureAwait(false);
             _toastService.ShowToast($"Post with id {id} Deleted Successfully", ToastLevel.SUCCESS);
-            StateHasChanged();
+            Navigation.NavigateTo("/", true);
         }
 
 

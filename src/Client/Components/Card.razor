@@ -14,20 +14,23 @@
     <div class="card-footer">
         <p class="card-text">
             <small class="text-muted">
-                @Post.Created.ToLocalTime()
+                Created: @Post.Created.ToLocalTime()
             </small>
         </p>
         @if (Post.Modified.HasValue)
         {
             <p class="card-text">
-                <small class="text-muted">@Post.Modified.Value</small>
+                <small class="text-muted">
+                    Updated: @Post.Modified.Value
+                </small>
             </p>
         }
         @if (!string.IsNullOrEmpty(Post.Tags))
         {
-            <p class="card-text">
-                <small class="badge badge-pill badge-warning"> #@Post.Tags </small>
-            </p>
+            @foreach (var tag in Post.Tags.Split(';'))
+            {
+                <small class="badge badge-pill badge-warning"> #@tag </small>
+            }
         }
         <blockquote class="blockquote mb-0">
             <footer class="blockquote-footer">
