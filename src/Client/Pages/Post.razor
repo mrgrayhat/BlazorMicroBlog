@@ -10,7 +10,7 @@
     else
     {
 
-        @if (PostDto.Data is null)
+        @if (PostDto.Data is null && PostDto.Succeeded is false)
         {
             <p class="text-center">Post Not Found!</p>
         }
@@ -34,6 +34,14 @@
                         @PostDto.Data.Created
                     </small>
                 </div>
+                @if (PostDto.Data.Modified.HasValue)
+                {
+                    <div class="col-auto">
+                        <small class="text-info">
+                            Updated: <small class="text-muted">@PostDto.Data.Modified.Value</small>
+                        </small>
+                    </div>
+                }
                 <div class="col-auto">
                     <blockquote class="blockquote mb-0">
                         <footer class="blockquote-footer">
@@ -46,7 +54,10 @@
                 <div class="col-auto">
                     @if (!string.IsNullOrEmpty(PostDto.Data.Tags))
                     {
-                        <small class="badge badge-pill badge-warning"> #@PostDto.Data.Tags </small>
+                        @foreach (var tag in PostDto.Data.Tags.Split(';'))
+                        {
+                            <small class="badge badge-pill badge-warning"> #@tag </small>
+                        }
                     }
                 </div>
             </div>
