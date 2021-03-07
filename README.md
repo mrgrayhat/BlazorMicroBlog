@@ -11,12 +11,12 @@ In this project, I just focused on building the user interface by blazor. So I w
   
  - PWA app (desktop):
   ![PWA Blog - Index](Documents/screenshot/MicroBlog_PwaApp_IndexPage.png?raw=true)
- - PWA app (Mobile):
-  ![PWA Blog - Index](Documents/screenshot/PWA_Mobile/Screenshot_20210307-145416_Firefox.jpg?raw=true)
- - Mobile Browser:
-  ![Mobile Blog - Index](Documents/screenshot/PWA_Mobile/Screenshot_20210307-143551_SamsungInternet.jpg?raw=true)
- - View Post Page:
+  - View Post Page:
   ![View Post](Documents/screenshot/PWA_ViewPostPage.PNG?raw=true)
+- PWA app (Android) & Mobile Browser:
+
+ ![PWA Blog - View Post](Documents/screenshot/PWA_Mobile/Screenshot_20210307-145448_Firefox.jpg?raw=true)
+ ![Mobile Browser Blog - Index](Documents/screenshot/PWA_Mobile/Screenshot_20210307-143551_SamsungInternet.jpg?raw=true)
 
 ## How to use:
 By default, the program runs under Asp.Net Core Hosted Mode.
