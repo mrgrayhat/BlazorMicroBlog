@@ -1,4 +1,5 @@
 ﻿@page "/newpost"
+@attribute [Authorize]
 @inject IBlogClient BlogClient
 @inject NavigationManager navigator
 @inject ToastService toastService
@@ -22,11 +23,11 @@
             <ValidationSummary />
         </div>
 
-        <div class="row mt-4">
-            <i class="oi oi-person" />
-            <label for="author"> Author</label>
-            <InputText id="author" @bind-Value="PostDto.Author" class="form-control" />
-        </div>
+        @*<div class="row mt-4">
+                <i class="oi oi-person" />
+                <label for="author"> Author</label>
+                <InputText id="author" @bind-Value="PostDto.Author" class="form-control" />
+            </div>*@
         <div class="row mt-4">
             <i class="oi oi-header" />
             <label for="title"> Title</label>
@@ -37,11 +38,13 @@
             <label for="body"> Body</label>
             <InputTextArea id="body" @bind-Value="PostDto.Body" class="form-control" rows="10" />
         </div>
-        <div class="row mt-4">
-            <i class="oi oi-data-transfer-upload" />
-            <label for="thumbnail"> Thumbnail Photo</label>
-            <InputText name="thumbnail" id="thumbnail" @bind-Value="PostDto.Thumbnail" class="form-control" />
-        </div>
+        @*<div class="row mt-4">
+                <i class="oi oi-data-transfer-upload" />
+                <label for="thumbnail"> Thumbnail Photo</label>
+                <InputText name="thumbnail" id="thumbnail" @bind-Value="PostDto.Thumbnail" class="form-control" />
+            </div>*@
+        <Upload @bind-value="PostDto.Thumbnail" />
+
         <div class="row mt-4">
             <i class="oi oi-tags" />
             <label for="tags"> Tags (Seperate by ;)</label>
