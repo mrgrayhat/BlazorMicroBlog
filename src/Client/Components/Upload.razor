@@ -1,4 +1,5 @@
-﻿@*@inject IUploadClient UploadClient*@
+﻿@inject IUploadClient UploadClient
+@attribute [Authorize]
 @inject ToastService toastService
 
 
@@ -33,16 +34,16 @@
                 var content = new MultipartFormDataContent();
                 content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
                 content.Add(new StreamContent(memoryStream, Convert.ToInt32(resizedImage.Size)), "image", file.Name);
-                //var result = await UploadClient.PostAsync(new FileParameter(memoryStream));
-                //if (result.Succeeded)
-                //{
-                //    ImgUrl = result.Data;
-                //    toastService.ShowToast("Image uploaded successfully", ToastLevel.SUCCESS);
-                //}
-                //else
-                //{
-                //    toastService.ShowToast($"Failed to upload image. {result.Message}", ToastLevel.ERROR);
-                //}
+                var result = await UploadClient.PostAsync(new FileParameter(memoryStream));
+                if (result.Succeeded)
+                {
+                    ImgUrl = result.Data;
+                    toastService.ShowToast("Image uploaded successfully", ToastLevel.SUCCESS);
+                }
+                else
+                {
+                    toastService.ShowToast($"Failed to upload image. {result.Message}", ToastLevel.ERROR);
+                }
 
             }
         }
