@@ -2,11 +2,15 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MicroBlog.Server.API.Models.Blog;
+using MicroBlog.Server.Infrastructure.Contexts.Configurations.Blog;
+using MicroBlog.Server.Infrastructure.Contexts.Configurations.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroBlog.Server.API.Infrastructure.Contexts
 {
-    public class BlogDbContext : DbContext, IBlogDbContext
+    public class BlogDbContext : IdentityDbContext<IdentityUser>, IBlogDbContext
     {
         public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options)
         {
@@ -34,36 +38,16 @@ namespace MicroBlog.Server.API.Infrastructure.Contexts
 
             base.OnModelCreating(builder);
 
+            #region Identity Users & Roles
+            builder.ApplyConfiguration(new RoleConfiguration());
+            builder.ApplyConfiguration(new UserConfiguration());
+            builder.ApplyConfiguration(new UserRoleConfiguration());
+            #endregion
 
-            builder.Entity<File>((opt) =>
-            {
-                opt.HasKey(key => key.ID);
-                opt.HasIndex(idx => idx.Name).IsUnique();
-
-                opt.Property(u => u.Creator).HasMaxLength(25).IsUnicode().IsRequired();
-                opt.Property(n => n.Name).HasMaxLength(50).IsUnicode().IsRequired();
-                opt.Property(desc => desc.Description).HasMaxLength(500)
-                .IsUnicode().IsRequired(false);
-                opt.Property(s => s.Size).IsRequired();
-                opt.Property(c => c.ContentType).HasMaxLength(20)
-                .IsUnicode().IsRequired();
-            });
-
-            builder.Entity<Post>((opt) =>
-            {
-                opt.HasKey(key => key.ID);
-                opt.HasIndex(idx => idx.ID).IsUnique();
-
-                opt.Property(a => a.Author).HasMaxLength(25).IsUnicode().IsRequired();
-                opt.Property(t => t.Title).HasMaxLength(50).IsUnicode().IsRequired();
-                opt.Property(b => b.Body).HasMaxLength(5000).IsUnicode().IsRequired();
-                opt.Property(desc => desc.Description).HasMaxLength(2500)
-                .IsUnicode().IsRequired(false);
-                opt.Property(thumb => thumb.Thumbnail).HasMaxLength(254)
-                .IsUnicode().IsRequired(false);
-                opt.Property(tag => tag.Tags).HasMaxLength(254)
-                .IsUnicode().IsRequired(false);
-            });
+            #region Blog
+            builder.ApplyConfiguration(new FileConfiguration());
+            builder.ApplyConfiguration(new PostConfiguration());
+            #endregion
         }
     }
 }
