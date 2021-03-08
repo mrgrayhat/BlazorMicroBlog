@@ -2,6 +2,8 @@
 @inject IBlogClient BlogClient
 @inject NavigationManager navigator
 @inject ToastService toastService
+@attribute [Authorize]
+@*@using Microsoft.AspNetCore.Authorization*@
 
 <div class="container">
     <div class="row">
@@ -25,11 +27,11 @@
                 <ValidationSummary />
             </div>
 
-            <div class="row mt-4">
-                <i class="oi oi-person" />
-                <label for="author"> Author</label>
-                <InputText id="author" @bind-Value="PostDto.Author" class="form-control" />
-            </div>
+            @*<div class="row mt-4">
+                    <i class="oi oi-person" />
+                    <label for="author"> Author</label>
+                    <InputText id="author" @bind-Value="@UserName" class="form-control" />
+                </div>*@
             <div class="row mt-4">
                 <i class="oi oi-header" />
                 <label for="title"> Title</label>
@@ -68,16 +70,21 @@
 
 @functions{
 
-    PostDto PostDto { get; set; }
+    //[CascadingParameter]
+    //public Task<AuthenticationState> AuthState { get; set; }
     [Parameter]
     public int Id { get; set; }
 
+    private PostDto PostDto { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        //var authState = await AuthState;
+        //string username = authState.User.FindFirst(ClaimTypes.Name).Value;
+
         var old = await BlogClient.GetByIdAsync(Id).ConfigureAwait(false);
         PostDto = new PostDto
         {
-            Author = old.Data.Author,
             Title = old.Data.Title,
             Body = old.Data.Body,
             Thumbnail = old.Data.Thumbnail,
