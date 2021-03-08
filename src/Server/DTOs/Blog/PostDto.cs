@@ -13,9 +13,6 @@ namespace MicroBlog.Server.DTOs.Blog
         [Required(ErrorMessage = "Post Body is required")]
         [MaxLength(5000, ErrorMessage = "No more than 5000 character allowed!")]
         public string Body { get; set; }
-        [Required(ErrorMessage = "Post Author is required")]
-        [MaxLength(25, ErrorMessage = "No more than 25 character allowed!")]
-        public string Author { get; set; }
         [MaxLength(254, ErrorMessage = "No more than 254 character allowed!")]
         public string Tags { get; set; }
         [MaxLength(2500, ErrorMessage = "No more than 2500 character allowed!")]
