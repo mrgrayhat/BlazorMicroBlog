@@ -53,23 +53,21 @@
             <i class="oi oi-chat" />
             <small class="small"> 12 </small>
         </a>
-        <div class="row">
-            <div class="col-auto">
-                <button class="btn btn-sm btn-danger" @onclick=@(async () => await (DeletePost(Post.Id)))>
-                    Delete
-                    <i class="oi oi-delete" />
-                </button>
-                <button class="card-link btn btn-sm btn-warning" @onclick="()=>EditPost(Post.Id)">
-                    Edit
-                    <i class="oi oi-pencil" />
-                </button>
-            </div>
-        </div>
-
+        <AuthorizeView>
+            <Authorized>
+                <div class="row">
+                    <div class="col-auto">
+                        <button class="btn btn-sm btn-danger" @onclick=@(async () => await (DeletePost(Post.Id)))>
+                            Delete
+                            <i class="oi oi-delete" />
+                        </button>
+                        <button class="card-link btn btn-sm btn-warning" @onclick="()=>EditPost(Post.Id)">
+                            Edit
+                            <i class="oi oi-pencil" />
+                        </button>
+                    </div>
+                </div>
+            </Authorized>
+        </AuthorizeView>
     </div>
 </div>
-
-@code {
-
-
-}
