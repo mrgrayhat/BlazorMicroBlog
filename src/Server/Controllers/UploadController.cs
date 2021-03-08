@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MicroBlog.Server.Wrappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace MicroBlog.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UploadController : ControllerBase
     {
         private readonly ILogger<UploadController> _logger;
@@ -24,7 +26,7 @@ namespace MicroBlog.Server.Controllers
             _webHostEnvironment = webHostEnvironment;
             _logger = logger;
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Get(string path)
         {
