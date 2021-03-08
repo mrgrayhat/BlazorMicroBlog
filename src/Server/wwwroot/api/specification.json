@@ -6,6 +6,80 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/accounts/Registration": {
+      "post": {
+        "tags": [
+          "Accounts"
+        ],
+        "operationId": "Accounts_RegisterUser",
+        "requestBody": {
+          "x-name": "userForRegistration",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegistrationDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts/Login": {
+      "post": {
+        "tags": [
+          "Accounts"
+        ],
+        "operationId": "Accounts_Login",
+        "requestBody": {
+          "x-name": "userLoginDto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Blog": {
       "get": {
         "tags": [
@@ -74,8 +148,33 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Blog/{id}": {
@@ -103,6 +202,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResponseOfPostResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -148,8 +257,33 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -178,8 +312,33 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Blog/search/{term}": {
@@ -207,6 +366,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResponseOfIEnumerableOfPostResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -277,12 +446,132 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     }
   },
   "components": {
     "schemas": {
+      "RegistrationResponseDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "isSuccessfulRegistration": {
+            "type": "boolean"
+          },
+          "errors": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UserRegistrationDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "username",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confirmPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "acceptEULA": {
+            "title": "I agree to the terms and conditions",
+            "type": "boolean"
+          }
+        }
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "isAuthSuccessful": {
+            "type": "boolean"
+          },
+          "errorMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UserLoginDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "usernameOrEmail",
+          "password"
+        ],
+        "properties": {
+          "usernameOrEmail": {
+            "type": "string",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rememberMe": {
+            "type": "boolean"
+          }
+        }
+      },
       "PagedResponseOfIEnumerableOfPostResponseDto": {
         "allOf": [
           {
@@ -435,8 +724,7 @@
         "additionalProperties": false,
         "required": [
           "title",
-          "body",
-          "author"
+          "body"
         ],
         "properties": {
           "title": {
@@ -447,11 +735,6 @@
           "body": {
             "type": "string",
             "maxLength": 5000,
-            "minLength": 1
-          },
-          "author": {
-            "type": "string",
-            "maxLength": 25,
             "minLength": 1
           },
           "tags": {
