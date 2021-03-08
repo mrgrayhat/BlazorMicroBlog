@@ -1,13 +1,17 @@
-﻿using MicroBlog.Server.API.Infrastructure.Contexts;
+﻿using System.Linq;
+using System.Text;
+using MicroBlog.Server.API.Infrastructure.Contexts;
 using MicroBlog.Server.API.Infrastructure.Seeds;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 
@@ -26,6 +30,8 @@ namespace MicroBlog.Server.API.Infrastructure
         {
             services.AddCustomCors();
             services.AddCustomSwagger();
+            services.AddCustomIdentity(configuration);
+
             services.AddDbContext<BlogDbContext>(options =>
             {
                 bool.TryParse(configuration["Blog:UseSqLite"], out bool useSqlite);
@@ -67,7 +73,7 @@ namespace MicroBlog.Server.API.Infrastructure
             return services;
         }
 
-        public static IServiceCollection AddCustomCors(this IServiceCollection services)
+        private static IServiceCollection AddCustomCors(this IServiceCollection services)
         {
             services.AddCors(options =>
             {
@@ -84,7 +90,7 @@ namespace MicroBlog.Server.API.Infrastructure
             return services;
         }
 
-        public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
+        private static IServiceCollection AddCustomSwagger(this IServiceCollection services)
         {
             #region Swagger & OpenApi Configuration
 
@@ -119,6 +125,52 @@ namespace MicroBlog.Server.API.Infrastructure
                 });
             });
             #endregion
+
+            return services;
+        }
+
+        /// <summary>
+        /// add identity and configure user security options. Configure Token Authentication and Validation
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        private static IServiceCollection AddCustomIdentity(this IServiceCollection services, IConfiguration configuration)
+        {
+            IConfigurationSection IdentityOptions = configuration.GetSection("IdentityOptions");
+            IConfigurationSection jwtSettings = configuration.GetSection("JwtSettings");
+
+            services.AddIdentity<IdentityUser, IdentityRole>((opt) =>
+            {
+                opt.User.RequireUniqueEmail = IdentityOptions.GetValue<bool>("RequireUniqueEmail");
+                opt.Lockout.MaxFailedAccessAttempts = IdentityOptions.GetValue<int>("MaxFailedAccessAttempts");
+
+                if (IdentityOptions.GetValue<bool>("HighComplexity") is false)
+                {
+                    opt.Password.RequiredUniqueChars = 0;
+                    opt.Password.RequireNonAlphanumeric = false;
+                    opt.Password.RequireUppercase = false;
+                }
+            }).AddEntityFrameworkStores<BlogDbContext>();
+
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtSettings.GetValue<string>("validIssuer"),
+                    ValidAudience = jwtSettings.GetValue<string>("validAudience"),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetValue<string>("securityKey")))
+                };
+            });
             return services;
         }
     }
