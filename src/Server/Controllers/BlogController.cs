@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using MicroBlog.Server.API.Infrastructure.Contexts;
 using MicroBlog.Server.API.Models.Blog;
 using MicroBlog.Server.DTOs.Blog;
 using MicroBlog.Server.Wrappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,6 +16,7 @@ namespace MicroBlog.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class BlogController : ControllerBase
     {
         private const int DEFAULT_PAGE_SIZE = 10;
@@ -35,6 +38,8 @@ namespace MicroBlog.Server.Controllers
         /// <param name="page">page to fetch</param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType(200)]
         public async Task<ActionResult<PagedResponse<IEnumerable<PostResponseDto>>>> Index([FromQuery] int? pageSize, int page = 1)
         {
             pageSize = pageSize.GetValueOrDefault(DEFAULT_PAGE_SIZE);
@@ -75,7 +80,10 @@ namespace MicroBlog.Server.Controllers
         /// <param name="id">post id</param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         //[ResponseCache(CacheProfileName = "30SecCache")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Response<PostResponseDto>>> GetById(int id)
         {
             Post post = await _blogDbContext.Posts.FindAsync(id);
@@ -104,6 +112,9 @@ namespace MicroBlog.Server.Controllers
         /// <param name="postDto">post data</param>
         /// <returns>created post id</returns>
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Response<int>>> Post(PostDto postDto)
         {
             if (!ModelState.IsValid)
@@ -111,7 +122,7 @@ namespace MicroBlog.Server.Controllers
 
             Post mapped = new Post
             {
-                Author = postDto.Author,
+                Author = User.FindFirst(ClaimTypes.Name).Value,
                 Title = postDto.Title,
                 Body = postDto.Body,
                 Created = DateTime.Now,
@@ -133,13 +144,20 @@ namespace MicroBlog.Server.Controllers
         /// <param name="postDto">new post data</param>
         /// <returns></returns>
         [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Response<int>>> Put(int id, PostDto postDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var post = await _blogDbContext.Posts.FindAsync(id).ConfigureAwait(false);
             if (post is null)
                 return NotFound(new Response<int>($"Couldn't find any post with ID {id}."));
 
-            post.Author = postDto.Author;
+            //post.Author = postDto.Author;
+            post.Author = User.FindFirst(ClaimTypes.Name).Value;
             post.Title = postDto.Title;
             post.Body = postDto.Body;
             post.Description = postDto.Description;
@@ -150,7 +168,8 @@ namespace MicroBlog.Server.Controllers
             _blogDbContext.Posts.Update(post);
             await _blogDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return Ok(new Response<int>(post.ID));
+            return StatusCode(201, new Response<int>(post.ID));
+            //return Ok(new Response<int>(post.ID));
         }
 
         // Delete api/<controller>/1
@@ -160,6 +179,9 @@ namespace MicroBlog.Server.Controllers
         /// <param name="id">post id</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Response<int>>> DeleteAsync(int id)
         {
             // first time, do find query And Track the Record for future request's, so ef give it from the cache in next find's.
@@ -180,6 +202,9 @@ namespace MicroBlog.Server.Controllers
         /// <param name="term">term/text to search in post's title</param>
         /// <returns></returns>
         [HttpGet("search/{term}")]
+        [AllowAnonymous]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Response<IEnumerable<PostResponseDto>>>> Search(string term)
         {
             var posts = await _blogDbContext.Posts.AsNoTracking()
