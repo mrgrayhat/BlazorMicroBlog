@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using MicroBlog.Server.API.Infrastructure.Contexts;
 using MicroBlog.Server.API.Models.Blog;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace MicroBlog.Server.API.Infrastructure.Seeds
@@ -44,8 +41,7 @@ namespace MicroBlog.Server.API.Infrastructure.Seeds
         private static readonly HttpClient _httpClient;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public DbInitializerService(
-            IServiceScopeFactory scopeFactory)
+        public DbInitializerService(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
         }
@@ -96,7 +92,7 @@ namespace MicroBlog.Server.API.Infrastructure.Seeds
                         {
                             Author = "admin",
                             Title = "Hello World",
-                            Body = "Hoora, First post in this blog!",
+                            Body = "Hooray, First post in this blog!",
                             Description = "this is just a simple post",
                             Tags = "HelloWorld;FirstPost;MicroBlog",
                             Created = DateTime.Now,
