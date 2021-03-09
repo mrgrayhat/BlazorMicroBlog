@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using MicroBlog.Server.API.Infrastructure.Contexts;
 using MicroBlog.Server.API.Infrastructure.Seeds;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using Serilog;
 
 namespace MicroBlog.Server.API.Infrastructure
 {
@@ -32,17 +34,15 @@ namespace MicroBlog.Server.API.Infrastructure
             services.AddCustomSwagger();
             services.AddCustomIdentity(configuration);
 
+            var blogConfigurations = configuration.GetSection("Blog");
+
+            string connectionString = blogConfigurations.GetValue<string>("ConnectionString");
+            bool useInMemory = blogConfigurations.GetValue<bool>("UseInMemory");
+            bool useSqlite = blogConfigurations.GetValue<bool>("UseSqLite");
+
             services.AddDbContext<BlogDbContext>(options =>
             {
-                bool.TryParse(configuration["Blog:UseSqLite"], out bool useSqlite);
-                bool.TryParse(configuration["Blog:UseInMemory"], out bool useInMemory);
-                string connectionString = configuration["Blog:ConnectionString"];
-
-                if (useInMemory)
-                {
-                    options.UseInMemoryDatabase("MicroBlog"); // Takes database name
-                }
-                else if (useSqlite)
+                if (useSqlite)
                 {
                     options.UseSqlite(connectionString, b =>
                     {
@@ -53,12 +53,9 @@ namespace MicroBlog.Server.API.Infrastructure
                 }
                 else
                 {
-                    options.UseSqlServer(connectionString, b =>
-                    {
-                        b.MigrationsAssembly(typeof(BlogDbContext).Assembly.FullName);
-                    });
-
+                    options.UseInMemoryDatabase("MicroBlog"); // Takes database name
                 }
+
                 if (environment.IsDevelopment())
                 {
                     options.EnableSensitiveDataLogging();
