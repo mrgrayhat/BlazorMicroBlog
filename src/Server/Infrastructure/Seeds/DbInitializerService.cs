@@ -7,7 +7,7 @@ using MicroBlog.Server.API.Infrastructure.Contexts;
 using MicroBlog.Server.API.Models.Blog;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace MicroBlog.Server.API.Infrastructure.Seeds
 {
@@ -18,7 +18,7 @@ namespace MicroBlog.Server.API.Infrastructure.Seeds
         /// Will create the database if it does not already exist.
         /// </summary>
         /// <param name="isTest">Recreate database if true, othewise only check/apply migrations</param>
-        void Initialize(bool isTest = false);
+        Task Initialize(bool isTest = false);
 
         /// <summary>
         /// Adds some demo data to the Db
@@ -35,41 +35,49 @@ namespace MicroBlog.Server.API.Infrastructure.Seeds
         Task SeedExtraPosts(int max = 10);
     }
 
-    public class DbInitializerService : IDbInitializerService
+    public class DbInitializerService : IDbInitializerService, IDisposable
     {
 
-        private static readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ILogger<DbInitializerService> _logger;
 
-        public DbInitializerService(IServiceScopeFactory scopeFactory)
+        public DbInitializerService(IServiceScopeFactory scopeFactory, ILogger<DbInitializerService> logger)
         {
+            _logger = logger;
             _scopeFactory = scopeFactory;
-        }
-        /// <summary>
-        /// run once in program life
-        /// </summary>
-        static DbInitializerService()
-        {
             _httpClient = new HttpClient();
         }
-
+        public void Dispose()
+        {
+            ((IDisposable)_httpClient).Dispose();
+            Serilog.Log.Information("Db Initializer And HttpClient Disposed.");
+        }
         /// <summary>
         /// db context initial and migration check
         /// </summary>
         /// <param name="isTest">Recreate database if true, othewise only check/apply migrations</param>
-        public void Initialize(bool isTest = false)
+        public async Task Initialize(bool isTest = false)
         {
             using var serviceScope = _scopeFactory.CreateScope();
             using var context = serviceScope.ServiceProvider.GetService<BlogDbContext>();
             if (isTest)
             {
-                context.Database.EnsureCreated();
+                await context.Database.EnsureDeletedAsync();
+                await context.Database.EnsureCreatedAsync();
             }
             else
             {
-                if (context.Database.IsSqlServer())
+                if (context.Database.IsSqlite() || context.Database.IsSqlServer())
                 {
-                    context.Database.Migrate();
+                    var pendingMigration = await context.Database.GetPendingMigrationsAsync();
+                    _logger.LogInformation("Pending Migrations: {pending}", pendingMigration);
+
+                    await context.Database.MigrateAsync();
+
+                    var appliedMigrations = await context.Database.GetAppliedMigrationsAsync();
+                    _logger.LogInformation("Pending Migrations: {applied}", appliedMigrations);
+
                 }
             }
 
@@ -142,9 +150,9 @@ namespace MicroBlog.Server.API.Infrastructure.Seeds
         /// </summary>
         /// <param name="randomKey">a number to avoid duplicate results</param>
         /// <returns>an image url that poin to it's online address</returns>
-        public static async Task<string> GetRandomThumbnail(int? randomKey)
+        public async Task<string> GetRandomThumbnail(int? randomKey)
         {
-            Log.Information("Getting Online Random Thumbnail for seeding posts...");
+            Serilog.Log.Information("Getting Online Random Thumbnail for seeding posts...");
             randomKey = randomKey.GetValueOrDefault(new Random().Next());
             using HttpResponseMessage response = await _httpClient.GetAsync($"https://picsum.photos/200/200/?random={randomKey.Value}").ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
