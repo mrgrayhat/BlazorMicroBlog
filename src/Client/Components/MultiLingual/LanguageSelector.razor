@@ -1,0 +1,39 @@
+﻿<div class="col-auto">
+
+    <select class="form-control" value=@DefaultLanguage @onchange="HandleSelectedValue">
+        @foreach (var lang in languages)
+        {
+            <option value="@lang">@lang</option>
+        }
+    </select>
+    @*@DefaultLanguage*@
+    @*<i class="oi oi-flag" />*@
+
+</div>
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+    public string DefaultLanguage { get; set; } = "en-US";
+    static string[] languages = new string[] { "en-US", "fa-IR" };
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState;
+        if (authState != null && authState.User.Identity.IsAuthenticated)
+        {
+            Console.WriteLine("Locality: " + authState.User.FindFirst(ClaimTypes.Locality).Value);
+            DefaultLanguage = authState.User.FindFirst(ClaimTypes.Locality).Value;
+            this.StateHasChanged();
+        }
+
+    }
+
+    private void HandleSelectedValue(ChangeEventArgs e)
+    {
+        DefaultLanguage = e.Value.ToString();
+        this.StateHasChanged();
+    }
+
+}
