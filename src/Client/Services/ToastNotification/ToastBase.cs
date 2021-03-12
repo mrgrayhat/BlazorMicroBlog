@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Components;
 
-namespace MicroBlog.Blazor.Client.Services
+namespace MicroBlog.Blazor.Client.Services.ToastNotification
 {
     public class ToastBase : ComponentBase, IDisposable
     {
@@ -43,22 +43,22 @@ namespace MicroBlog.Blazor.Client.Services
             {
                 case ToastLevel.SUCCESS:
                     BackgroundCssClass = "bg-success";
-                    IconCssClass = "check";
+                    IconCssClass = "thumb-up";
                     Heading = SUCCESS;
                     break;
                 case ToastLevel.WARNING:
                     BackgroundCssClass = "bg-warning";
-                    IconCssClass = "exclamation";
+                    IconCssClass = "warning";
                     Heading = WARNING;
                     break;
                 case ToastLevel.ERROR:
                     BackgroundCssClass = "bg-danger";
-                    IconCssClass = "times";
+                    IconCssClass = "bug";
                     Heading = ERROR;
                     break;
                 case ToastLevel.INFO:
                     BackgroundCssClass = "bg-info";
-                    IconCssClass = "info";
+                    IconCssClass = "lightbulb";
                     Heading = INFO;
                     break;
             }

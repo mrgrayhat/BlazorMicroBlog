@@ -1,4 +1,4 @@
-﻿namespace MicroBlog.Blazor.Client.Services
+﻿namespace MicroBlog.Blazor.Client.Services.ToastNotification
 {
     public enum ToastLevel
     {

@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Timers;
 
-namespace MicroBlog.Blazor.Client.Services
+namespace MicroBlog.Blazor.Client.Services.ToastNotification
 {
     public class ToastService : IDisposable
     {
@@ -20,7 +21,6 @@ namespace MicroBlog.Blazor.Client.Services
         private void StartCountdown()
         {
             SetCountdown();
-
             if (Countdown.Enabled)
             {
                 Countdown.Stop();
