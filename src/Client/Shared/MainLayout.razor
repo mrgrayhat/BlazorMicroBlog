@@ -1,6 +1,5 @@
 ﻿@inherits LayoutComponentBase
 
-<Toast />
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -9,7 +8,14 @@
     <div class="main">
         <div class="top-row px-4">
             <AuthLinks />
-            <a href="https://github.com/mrgrayhat/BlazorMicroBlog" target="_blank" class="ml-md-auto">About</a>
+            <LanguageSelector />
+            <a href="https://github.com/mrgrayhat/BlazorMicroBlog" target="_blank" class="">
+                About
+                <span class="oi oi-external-link" />
+            </a>
+        </div>
+        <div class="sticky-top">
+            <Toast />
         </div>
 
         <div class="content px-4">
