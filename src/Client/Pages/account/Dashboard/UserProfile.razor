@@ -1,0 +1,54 @@
+﻿@page "/account/profile/{username?}"
+
+<h3>User Profile</h3>
+<hr />
+
+<div class="container">
+    <div class="row px-2">
+
+        @if (!string.IsNullOrWhiteSpace(Username))
+        {
+            <AuthorizeView>
+                <Authorized>
+                    <div class="col-auto">
+                        <p>@Username Profile</p>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+        }
+        else
+        {
+            <AuthorizeView>
+                <Authorized>
+                    <div class="col-auto">
+                        <p>@context.User.Identity.Name Profile</p>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <div class="col-auto">
+                        <a href="account/registration">Register</a>
+                        <a href="account/login">Log in</a>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
+        }
+
+    </div>
+</div>
+
+
+@functions {
+    [Parameter]
+    public string Username { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GetUserInfo();
+        //StateHasChanged();
+    }
+    private void GetUserInfo()
+    {
+        Console.WriteLine("Username: " + Username);
+
+    }
+}
