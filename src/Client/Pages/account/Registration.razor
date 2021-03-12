@@ -1,64 +1,66 @@
-﻿@page "/registration"
+﻿@page "/account/registration"
 <h3>Registration</h3>
+<div class="container">
 
-@if (ShowRegistrationErrors)
-{
-    <div class="alert alert-danger" role="alert">
-        @foreach (var error in Errors)
-        {
-            <p>@error</p>
-        }
-    </div>
-}
-
-<EditForm Model="UserRegistrationDto" OnValidSubmit="Register" class="card card-body bg-light mt-5">
-    <DataAnnotationsValidator />
-    <div class="row mt-4">
-        <ValidationSummary />
-    </div>
-
-    <div class="form-group row">
-        <label for="username" class="col-md-2 col-form-label">Username:</label>
-        <div class="col-md-10">
-            <InputText id="username" class="form-control" @bind-Value="UserRegistrationDto.Username" />
-            <ValidationMessage For="@(() => UserRegistrationDto.Username)" />
+    @if (ShowRegistrationErrors)
+    {
+        <div class="alert alert-danger" role="alert">
+            @foreach (var error in Errors)
+            {
+                <p>@error</p>
+            }
         </div>
-    </div>
-    <div class="form-group row">
-        <label for="email" class="col-md-2 col-form-label">Email:</label>
-        <div class="col-md-10">
-            <InputText id="email" class="form-control" @bind-Value="UserRegistrationDto.Email" />
-            <ValidationMessage For="@(() => UserRegistrationDto.Email)" />
-        </div>
-    </div>
+    }
 
-    <div class="form-group row">
-        <label for="password" class="col-md-2 col-form-label">Password:</label>
-        <div class="col-md-10">
-            <InputText type="password" id="password" class="form-control" @bind-Value="UserRegistrationDto.Password" />
-            <ValidationMessage For="@(() => UserRegistrationDto.Password)" />
+    <EditForm Model="UserRegistrationDto" OnValidSubmit="Register" class="card card-body bg-light mt-5">
+        <DataAnnotationsValidator />
+        <div class="row mt-4">
+            <ValidationSummary />
         </div>
-    </div>
 
-    <div class="form-group row">
-        <label for="confirm" class="col-md-2 col-form-label">Confirm Password:</label>
-        <div class="col-md-10">
-            <InputText type="password" id="confirm" class="form-control" @bind-Value="UserRegistrationDto.ConfirmPassword" />
-            <ValidationMessage For="@(() => UserRegistrationDto.ConfirmPassword)" />
+        <div class="form-group row">
+            <label for="username" class="col-md-2 col-form-label">Username:</label>
+            <div class="col-10">
+                <InputText id="username" class="form-control" @bind-Value="UserRegistrationDto.Username" />
+                <ValidationMessage For="@(() => UserRegistrationDto.Username)" />
+            </div>
         </div>
-    </div>
+        <div class="form-group row">
+            <label for="email" class="col-md-2 col-form-label">Email:</label>
+            <div class="col-10">
+                <InputText id="email" class="form-control" @bind-Value="UserRegistrationDto.Email" />
+                <ValidationMessage For="@(() => UserRegistrationDto.Email)" />
+            </div>
+        </div>
 
-    <div class="form-group row">
-        <label for="accepteula" class="col-md-2 col-form-label">AcceptEULA (@UserRegistrationDto.AcceptEULA):</label>
-        <div class="col-md-10">
-            <InputCheckbox id="accepteula" class="form-control" @bind-Value="UserRegistrationDto.AcceptEULA" />
-            <ValidationMessage For="@(() => UserRegistrationDto.AcceptEULA)" />
+        <div class="form-group row">
+            <label for="password" class="col-md-2 col-form-label">Password:</label>
+            <div class="col-10">
+                <InputText type="password" id="password" class="form-control" @bind-Value="UserRegistrationDto.Password" />
+                <ValidationMessage For="@(() => UserRegistrationDto.Password)" />
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-12 text-right">
-            <button type="submit" class="btn btn-success">Register</button>
+        <div class="form-group row">
+            <label for="confirm" class="col-md-2 col-form-label">Confirm Password:</label>
+            <div class="col-10">
+                <InputText type="password" id="confirm" class="form-control" @bind-Value="UserRegistrationDto.ConfirmPassword" />
+                <ValidationMessage For="@(() => UserRegistrationDto.ConfirmPassword)" />
+            </div>
         </div>
-    </div>
-</EditForm>
+
+        <div class="form-group row">
+            <label for="accepteula" class="col-md-2 col-form-label">AcceptEULA:</label>
+            <div class="col-10">
+                <InputCheckbox id="accepteula" class="custom-checkbox" @bind-Value="UserRegistrationDto.AcceptEULA" />
+                <ValidationMessage For="@(() => UserRegistrationDto.AcceptEULA)" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 text-right">
+                <button type="submit" class="btn btn-success">Register</button>
+            </div>
+        </div>
+    </EditForm>
+</div>

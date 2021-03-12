@@ -8,11 +8,12 @@ namespace MicroBlog.Blazor.Client.Pages.account
 {
     public partial class Registration
     {
-        private UserRegistrationDto UserRegistrationDto = new UserRegistrationDto();
+        private readonly UserRegistrationDto UserRegistrationDto = new UserRegistrationDto();
         [Inject]
-        public IAuthenticationService AuthenticationService { get; set; }
+        private IAuthenticationService AuthenticationService { get; set; }
         [Inject]
         public NavigationManager NavigationManager { get; set; }
+
         public bool ShowRegistrationErrors { get; set; }
         public IEnumerable<string> Errors { get; set; }
 
@@ -20,15 +21,16 @@ namespace MicroBlog.Blazor.Client.Pages.account
         {
             ShowRegistrationErrors = false;
 
-            RegistrationResponseDto result = await AuthenticationService.RegisterUser(UserRegistrationDto);
+            var result = await AuthenticationService.RegisterUser(UserRegistrationDto);
             if (!result.IsSuccessfulRegistration)
             {
                 Errors = result.Errors;
                 ShowRegistrationErrors = true;
+                StateHasChanged();
             }
             else
             {
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/", true);
             }
         }
     }
