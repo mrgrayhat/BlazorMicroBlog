@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using MicroBlog.Server.API.Infrastructure.Contexts;
 using MicroBlog.Server.API.Infrastructure.Seeds;
+using MicroBlog.Server.Models.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -137,7 +138,7 @@ namespace MicroBlog.Server.API.Infrastructure
             IConfigurationSection IdentityOptions = configuration.GetSection("IdentityOptions");
             IConfigurationSection jwtSettings = configuration.GetSection("JwtSettings");
 
-            services.AddIdentity<IdentityUser, IdentityRole>((opt) =>
+            services.AddIdentity<UserInfo, IdentityRole>((opt) =>
             {
                 opt.User.RequireUniqueEmail = IdentityOptions.GetValue<bool>("RequireUniqueEmail");
                 opt.Lockout.MaxFailedAccessAttempts = IdentityOptions.GetValue<int>("MaxFailedAccessAttempts");
@@ -162,7 +163,8 @@ namespace MicroBlog.Server.API.Infrastructure
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-
+                    RequireSignedTokens = true,
+                    SaveSigninToken = true,
                     ValidIssuer = jwtSettings.GetValue<string>("validIssuer"),
                     ValidAudience = jwtSettings.GetValue<string>("validAudience"),
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetValue<string>("securityKey")))
