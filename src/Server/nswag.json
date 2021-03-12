@@ -61,7 +61,7 @@
       "generateDtoTypes": true,
       "injectHttpClient": true,
       "disposeHttpClient": false,
-      "wrapDtoExceptions": true,
+      "wrapDtoExceptions": false,
       "generateExceptionClasses": true,
       "exceptionClass": "ApiException",
       "useHttpClientCreationMethod": false,
