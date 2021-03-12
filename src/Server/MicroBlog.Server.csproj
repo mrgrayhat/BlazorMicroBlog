@@ -42,6 +42,7 @@
     <RemoveDir Directories="$(OutDir)References" />
   </Target>
 
+  <!--Comment this item group if you get error and need regenerate client in blazor project, then Uncomment this lines-->
   <ItemGroup>
     <ProjectReference Include="..\Client\MicroBlog.Blazor.Client.csproj" />
   </ItemGroup>
