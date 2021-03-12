@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using MicroBlog.Server.API.Models.Blog;
 using MicroBlog.Server.Infrastructure.Contexts.Configurations.Blog;
 using MicroBlog.Server.Infrastructure.Contexts.Configurations.Identity;
-using Microsoft.AspNetCore.Identity;
+using MicroBlog.Server.Models.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroBlog.Server.API.Infrastructure.Contexts
 {
-    public class BlogDbContext : IdentityDbContext<IdentityUser>, IBlogDbContext
+    public class BlogDbContext : IdentityDbContext<UserInfo>, IBlogDbContext
     {
         public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options)
         {
