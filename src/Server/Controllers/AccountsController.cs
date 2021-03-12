@@ -42,7 +42,13 @@ namespace MicroBlog.Server.Controllers
         public async Task<ActionResult<RegistrationResponseDto>> RegisterUser([FromBody] UserRegistrationDto userForRegistration)
         {
             if (userForRegistration == null || !ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                return BadRequest(new RegistrationResponseDto
+                {
+                    IsSuccessfulRegistration = false,
+                    Errors = ModelState.Values.SelectMany(item => item.Errors.Select(error => error.ErrorMessage))
+                });
+            }
             var user = new UserInfo
             {
                 UserName = userForRegistration.Username,
@@ -56,7 +62,6 @@ namespace MicroBlog.Server.Controllers
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
-                _logger.LogError("couldn't register user, cause to: {errors}", errors);
 
                 return BadRequest(new RegistrationResponseDto
                 {
@@ -86,23 +91,42 @@ namespace MicroBlog.Server.Controllers
             else
                 user = await _userManager.FindByNameAsync(userLoginDto.UsernameOrEmail);
 
-            if (user is null)
+            // check account lock state
+            if (user != null && await _userManager.IsLockedOutAsync(user))
+            {
+                DateTimeOffset? lockedDate = await _userManager.GetLockoutEndDateAsync(user);
+
+                _logger.LogWarning("Account {account} LockedOut!", user.UserName, lockedDate.Value.ToLocalTime().ToString());
+                return Unauthorized(new LoginResponseDto
+                {
+                    IsAuthSuccessful = false,
+                    ErrorMessage = $"due to too many tries, this account is locked out until{lockedDate.Value.ToLocalTime()}. you can try to recover your account."
+                });
+            }
+            if (user is null) // not valid username or user existence
             {
                 _logger.LogWarning("Username/Email {user} NotFound to login", userLoginDto.UsernameOrEmail);
 
                 return Unauthorized(new LoginResponseDto
                 {
-                    ErrorMessage = "Invalid Username/Email"
+                    ErrorMessage = "Invalid Username/Password"
                 });
             }
-            if (!await _userManager.CheckPasswordAsync(user, userLoginDto.Password))
+            else if (!await _userManager.CheckPasswordAsync(user, userLoginDto.Password))
             {
-                _logger.LogWarning("Provided password {pass} not match for user {user}", userLoginDto.Password, userLoginDto.UsernameOrEmail);
+                if (await _userManager.GetLockoutEnabledAsync(user))
+                {
+                    await _userManager.AccessFailedAsync(user).ConfigureAwait(false);
+                    _logger.LogWarning("AccessFailed occured. due to lockout setting.");
+                }
+
+                _logger.LogWarning("Incorrect Password Entered for user {user} to login", userLoginDto.UsernameOrEmail);
                 return Unauthorized(new LoginResponseDto
                 {
-                    ErrorMessage = "Invalid Password"
+                    ErrorMessage = "Invalid Username/Password"
                 });
             }
+            // generate access token
             SigningCredentials signingCredentials = JwtTokenManagerExtensions
                 .GetSigningCredentials(_jwtSettings);
             List<Claim> claims = await JwtTokenManagerExtensions
@@ -118,6 +142,5 @@ namespace MicroBlog.Server.Controllers
                 Token = token
             });
         }
-
     }
 }
