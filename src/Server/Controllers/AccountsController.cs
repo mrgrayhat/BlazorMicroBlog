@@ -57,15 +57,20 @@ namespace MicroBlog.Server.Controllers
             {
                 var errors = result.Errors.Select(e => e.Description);
                 _logger.LogError("couldn't register user, cause to: {errors}", errors);
+
                 return BadRequest(new RegistrationResponseDto
                 {
+                    IsSuccessfulRegistration = false,
                     Errors = errors
                 });
             }
             await _userManager.AddToRoleAsync(user, "User");
-
             _logger.LogWarning("User {user} Registered.", userForRegistration.Username);
-            return StatusCode(201);
+
+            return StatusCode(201, new RegistrationResponseDto
+            {
+                IsSuccessfulRegistration = true
+            });
         }
 
         [HttpPost("Login")]
@@ -93,7 +98,7 @@ namespace MicroBlog.Server.Controllers
             if (!await _userManager.CheckPasswordAsync(user, userLoginDto.Password))
             {
                 _logger.LogWarning("Provided password {pass} not match for user {user}", userLoginDto.Password, userLoginDto.UsernameOrEmail);
-                return BadRequest(new LoginResponseDto
+                return Unauthorized(new LoginResponseDto
                 {
                     ErrorMessage = "Invalid Password"
                 });
