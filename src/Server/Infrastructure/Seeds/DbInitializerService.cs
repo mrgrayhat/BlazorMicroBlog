@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using MicroBlog.Server.API.Infrastructure.Contexts;
 using MicroBlog.Server.API.Models.Blog;
+using MicroBlog.Server.Models.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -94,11 +96,12 @@ namespace MicroBlog.Server.API.Infrastructure.Seeds
             {
                 using (var context = serviceScope.ServiceProvider.GetService<BlogDbContext>())
                 {
+                    using var userManager = serviceScope.ServiceProvider.GetService<UserManager<UserInfo>>();
                     if (!context.Posts.Any())
                     {
                         Post helloWorldPost = new Post
                         {
-                            Author = "admin",
+                            Author = await userManager.FindByNameAsync("admin"),
                             Title = "Hello World",
                             Body = "Hooray, First post in this blog!",
                             Description = "this is just a simple post",
@@ -125,13 +128,15 @@ namespace MicroBlog.Server.API.Infrastructure.Seeds
         {
             using IServiceScope serviceScope = _scopeFactory.CreateScope();
             using BlogDbContext context = serviceScope.ServiceProvider.GetService<BlogDbContext>();
+            using var userManager = serviceScope.ServiceProvider.GetService<UserManager<UserInfo>>();
 
             var posts = new List<Post>(max);
             for (int i = 1; i < max; i++)
             {
+
                 posts.Add(new Post
                 {
-                    Author = "admin",
+                    Author = await userManager.FindByNameAsync("admin"),
                     Title = $"Post {i}",
                     Body = $"This is post {i} contents.",
                     Description = $"Post {i} description",
