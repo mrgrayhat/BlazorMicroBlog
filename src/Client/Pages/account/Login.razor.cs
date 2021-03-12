@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MicroBlog.Blazor.Client.Services.Auth;
+using MicroBlog.Blazor.Client.Services.Http;
 using MicroBlog.BlogClient;
 using Microsoft.AspNetCore.Components;
 
@@ -8,7 +10,6 @@ namespace MicroBlog.Blazor.Client.Pages.account
     public partial class Login
     {
         private UserLoginDto _userForAuthentication = new UserLoginDto();
-
         [Inject]
         public IAuthenticationService AuthenticationService { get; set; }
         [Inject]
@@ -19,16 +20,16 @@ namespace MicroBlog.Blazor.Client.Pages.account
         public async Task ExecuteLogin()
         {
             ShowAuthError = false;
-
             LoginResponseDto result = await AuthenticationService.Login(_userForAuthentication);
             if (!result.IsAuthSuccessful)
             {
                 Error = result.ErrorMessage;
                 ShowAuthError = true;
+                StateHasChanged();
             }
             else
             {
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/", true);
             }
         }
     }

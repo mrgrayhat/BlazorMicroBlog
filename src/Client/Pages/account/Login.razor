@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/account/login"
 <h3>Login</h3>
 
 @if (ShowAuthError)
@@ -10,9 +10,6 @@
 
 <EditForm Model="_userForAuthentication" OnValidSubmit="ExecuteLogin" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
-    <div class="row mt-4">
-        <ValidationSummary />
-    </div>
 
     <div class="form-group row">
         <label for="username" class="col-md-2 col-form-label">Username/Email:</label>
@@ -33,7 +30,7 @@
     <div class="form-group row">
         <label for="password" class="col-md-2 col-form-label">Remember Me:</label>
         <div class="col-md-10">
-            <InputCheckbox id="remembeme" class="form-control" @bind-Value="_userForAuthentication.RememberMe" />
+            <InputCheckbox id="remembeme" @bind-Value="_userForAuthentication.RememberMe" />
         </div>
     </div>
 
