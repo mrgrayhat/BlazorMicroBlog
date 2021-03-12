@@ -1,0 +1,30 @@
+﻿@page "/account/dashboard"
+@attribute [Authorize(Roles = "Admin,Writer")]
+
+<h3>User Dashboard</h3>
+<hr />
+
+<div class="container">
+    <div class="row px-2">
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="col-auto">
+                    <p>@context.User.Identity.Name Dashboard</p>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="col-auto">
+                    <a href="account/registration">Register</a>
+                    <a href="account/login">Log in</a>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+
+    </div>
+</div>
+
+
+@functions {
+
+}
