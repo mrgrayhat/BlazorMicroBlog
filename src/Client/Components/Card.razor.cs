@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
+using MicroBlog.Blazor.Client.Services.ToastNotification;
 using MicroBlog.BlogClient;
 using Microsoft.AspNetCore.Components;
-using MicroBlog.Blazor.Client.Services;
 
 namespace MicroBlog.Blazor.Client.Components
 {
@@ -12,21 +12,20 @@ namespace MicroBlog.Blazor.Client.Components
         [Inject]
         private NavigationManager Navigation { get; set; }
         [Inject]
-        private IBlogClient _blogClient { get; set; }
+        private IBlogClient BlogClient { get; set; }
         [Inject]
-        private ToastService _toastService { get; set; }
+        private ToastService ToastService { get; set; }
 
         private void EditPost(int id)
         {
-            Navigation.NavigateTo($"/edit/{id}");
+            Navigation.NavigateTo($"/blog/edit/{id}");
         }
         private async Task DeletePost(int id)
         {
-            await _blogClient.DeleteAsync(id).ConfigureAwait(false);
-            _toastService.ShowToast($"Post with id {id} Deleted Successfully", ToastLevel.SUCCESS);
+            await BlogClient.DeleteAsync(id).ConfigureAwait(false);
+            ToastService.ShowToast($"Post with id {id} Deleted Successfully", ToastLevel.SUCCESS);
             Navigation.NavigateTo("/", true);
         }
-
 
         /// <summary>
         /// truncate/trim sentence words for specific lenght + add ellipse

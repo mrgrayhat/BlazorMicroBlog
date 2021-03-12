@@ -1,16 +1,23 @@
-﻿div {
-    transition: all 0.5s ease;
+﻿div.card {
+    transition: all 0.5s;
+    width: 18rem;
 }
 
-    div:hover {
+    div.card:hover {
         background-color: lightseagreen;
         cursor: pointer;
-        -webkit-transition: background-color 2s ease-out;
-        -moz-transition: background-color 2s ease-out;
-        -o-transition: background-color 2s ease-out;
-        transition: background-color 2s ease-out;
+        -moz-transform: scale(1.1);
+        -ms-transform: scale(1.1);
+        -o-transform: scale(1.1);
+        -webkit-transform: scale(1.1);
+        transform: scale(1.1);
+        -webkit-transition: 1s ease;
+        -moz-transition: 1s ease;
+        -o-transition: 1s ease;
+        transition: 1s ease;
+        z-index: 1;
     }
 
-        div:hover > p {
+        div.card:hover > p {
             color: white;
         }
