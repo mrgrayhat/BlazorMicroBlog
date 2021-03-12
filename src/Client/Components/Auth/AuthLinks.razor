@@ -1,11 +1,27 @@
 ﻿<AuthorizeView>
     <Authorized>
-        Hello, @context.User.Identity.Name!
-        <a href="Logout">Log out</a>
+        <div>
+            <a href="/account/profile" class="btn-link">
+                <img class="img-thumbnail rounded-circle user-avatar" src="@context.User.FindFirst("Avatar").Value" alt="UserAvatar" />
+                Hello, @context.User.Identity.Name!
+            </a>
+            <a href="/account/logout">
+                Log out
+                <i class="oi oi-account-logout"></i>
+            </a>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <a href="Registration">Register</a>
-        <a href="login">Log in</a>
+        <div>
+            <a href="/account/registration">
+                Register
+                <i class="oi oi-people"></i>
+            </a>
+            <a href="/account/login">
+                Log in
+                <i class="oi oi-account-login"></i>
+            </a>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
 

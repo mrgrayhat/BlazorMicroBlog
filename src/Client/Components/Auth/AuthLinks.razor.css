@@ -1,0 +1,20 @@
+﻿.user-avatar {
+    width: 3rem;
+    -moz-transition: all 1s;
+    -o-transition: all 1s;
+    -webkit-transition: all 1s;
+    transition: all 1s;
+}
+
+    .user-avatar:hover {
+        cursor: pointer;
+        -moz-transition: ease 1s;
+        -o-transition: ease 1s;
+        -webkit-transition: ease 1s;
+        transition: ease 1s;
+        -moz-transform: rotate(360deg) scale(3) translateY(1rem);
+        -ms-transform: rotate(360deg) scale(3) translateY(1rem);
+        -o-transform: rotate(360deg) scale(3) translateY(1rem);
+        -webkit-transform: rotate(360deg) scale(3) translateY(1rem);
+        transform: rotate(360deg) scale(3) translateY(1rem);
+    }
