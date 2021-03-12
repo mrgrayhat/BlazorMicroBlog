@@ -25,7 +25,17 @@
           "x-position": 1
         },
         "responses": {
-          "200": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
             "description": "",
             "content": {
               "application/json": {
@@ -68,14 +78,38 @@
             }
           },
           "401": {
-            "description": "",
+            "description": "\nor\n",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/LoginResponseDto"
                 }
               }
-            }
+            },
+            "x-expectedSchemas": [
+              {
+                "description": "",
+                "schema": {
+                  "nullable": true,
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/LoginResponseDto"
+                    }
+                  ]
+                }
+              },
+              {
+                "description": "",
+                "schema": {
+                  "nullable": true,
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/LoginResponseDto"
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       }
@@ -172,7 +206,10 @@
         },
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "Admin",
+              "Writer"
+            ]
           }
         ]
       }
@@ -257,31 +294,14 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
           }
         },
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "Admin",
+              "Writer"
+            ]
           }
         ]
       },
@@ -336,7 +356,10 @@
         },
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "Admin",
+              "Writer"
+            ]
           }
         ]
       }
@@ -391,7 +414,7 @@
         "operationId": "Upload_Get",
         "parameters": [
           {
-            "name": "path",
+            "name": "name",
             "in": "query",
             "schema": {
               "type": "string",
@@ -449,7 +472,10 @@
         },
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "Admin",
+              "Writer"
+            ]
           }
         ]
       }
@@ -517,35 +543,6 @@
             "nullable": true
           },
           "token": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ProblemDetails": {
-        "type": "object",
-        "additionalProperties": {
-          "nullable": true
-        },
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
             "type": "string",
             "nullable": true
           }
@@ -692,6 +689,35 @@
                 "$ref": "#/components/schemas/PostResponseDto"
               }
             ]
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
