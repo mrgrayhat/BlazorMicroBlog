@@ -1,9 +1,9 @@
-﻿@using MicroBlog.Blazor.Client.Services
+﻿@using MicroBlog.Blazor.Client.Services.ToastNotification
 @inherits ToastBase
 
 <div class="toast @(IsVisible ? "toast-visible" : null) @BackgroundCssClass">
     <div class="toast-icon">
-        <i class="fa fa-@IconCssClass" aria-hidden="true"></i>
+        <i class="oi oi-@IconCssClass" aria-hidden="true"></i>
     </div>
     <div class="toast-body">
         <h5>@Heading</h5>
