@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using MicroBlog.Server.API.Infrastructure.Contexts;
 using MicroBlog.Server.API.Models.Blog;
 using MicroBlog.Server.DTOs.Blog;
+using MicroBlog.Server.Models.Identity;
 using MicroBlog.Server.Wrappers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,17 +17,19 @@ namespace MicroBlog.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "Admin,Writer")]
     public class BlogController : ControllerBase
     {
         private const int DEFAULT_PAGE_SIZE = 10;
 
         private readonly ILogger<BlogController> _logger;
         private readonly BlogDbContext _blogDbContext;
+        private readonly UserManager<UserInfo> _userManager;
 
-        public BlogController(ILogger<BlogController> logger, BlogDbContext blogDbContext)
+        public BlogController(ILogger<BlogController> logger, BlogDbContext blogDbContext, UserManager<UserInfo> userManager)
         {
             _blogDbContext = blogDbContext ?? throw new ArgumentNullException($"{nameof(blogDbContext)} can't be null.");
+            _userManager = userManager ?? throw new ArgumentNullException($"{nameof(userManager)} can't be null.");
             _logger = logger;
         }
 
@@ -46,6 +49,7 @@ namespace MicroBlog.Server.Controllers
             // get paged result from posts table and sort them by newer posts
             IEnumerable<Post> posts = await _blogDbContext.Posts
                 .AsNoTracking() // remove unnecessary tracking cost for larg data
+                .Include(u => u.Author)
                 .OrderByDescending(x => x.Created)
                 .ThenByDescending(x => x.Modified)
                 .Skip((page - 1) * pageSize.Value)
@@ -57,7 +61,7 @@ namespace MicroBlog.Server.Controllers
             var postsDto = posts.Select(p => new PostResponseDto
             {
                 ID = p.ID,
-                Author = p.Author,
+                Author = p.Author.UserName,
                 Title = p.Title,
                 Body = p.Body,
                 Created = p.Created,
@@ -86,14 +90,18 @@ namespace MicroBlog.Server.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Response<PostResponseDto>>> GetById(int id)
         {
-            Post post = await _blogDbContext.Posts.FindAsync(id);
+            //Post post = await _blogDbContext.Posts.FindAsync(id);
+            Post post = await _blogDbContext.Posts
+                .AsNoTracking()
+                .Include(a => a.Author)
+                .FirstOrDefaultAsync(x => x.ID == id).ConfigureAwait(false);
             if (post is null)
                 return NotFound(new Response<PostResponseDto>($"Couldn't find any post with ID {id}."));
 
             var postDto = new PostResponseDto
             {
                 ID = post.ID,
-                Author = post.Author,
+                Author = post.Author.UserName,
                 Title = post.Title,
                 Body = post.Body,
                 Description = post.Description,
@@ -119,10 +127,14 @@ namespace MicroBlog.Server.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            if (await _blogDbContext.Posts.FirstOrDefaultAsync(x => x.Title.Equals(postDto.Title)).ConfigureAwait(false) != null)
+            {
+                ModelState.AddModelError("Title", "A post with this title is exist, specify another unique title.");
+                return BadRequest(ModelState);
+            }
             Post mapped = new Post
             {
-                Author = User.FindFirst(ClaimTypes.Name).Value,
+                Author = await _userManager.FindByNameAsync(User.Identity.Name).ConfigureAwait(false),
                 Title = postDto.Title,
                 Body = postDto.Body,
                 Created = DateTime.Now,
@@ -144,20 +156,22 @@ namespace MicroBlog.Server.Controllers
         /// <param name="postDto">new post data</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
+        //[ProducesResponseType(200)]
+        //[ProducesResponseType(401)]
+        //[ProducesResponseType(404)]
         public async Task<ActionResult<Response<int>>> Put(int id, PostDto postDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var post = await _blogDbContext.Posts.FindAsync(id).ConfigureAwait(false);
+            //var post = await _blogDbContext.Posts.FindAsync(id).ConfigureAwait(false);
+            var post = await _blogDbContext.Posts
+                .Include(a => a.Author)
+                .FirstOrDefaultAsync(x => x.ID == id).ConfigureAwait(false);
             if (post is null)
                 return NotFound(new Response<int>($"Couldn't find any post with ID {id}."));
 
-            //post.Author = postDto.Author;
-            post.Author = User.FindFirst(ClaimTypes.Name).Value;
+            post.Author = await _userManager.FindByNameAsync(User.Identity.Name).ConfigureAwait(false);
             post.Title = postDto.Title;
             post.Body = postDto.Body;
             post.Description = postDto.Description;
@@ -185,8 +199,7 @@ namespace MicroBlog.Server.Controllers
         public async Task<ActionResult<Response<int>>> DeleteAsync(int id)
         {
             // first time, do find query And Track the Record for future request's, so ef give it from the cache in next find's.
-            var post = await _blogDbContext.Posts
-                .FindAsync(id);
+            var post = await _blogDbContext.Posts.FindAsync(id);
             if (post is null)
                 return NotFound(new Response<int>($"Couln't find post with ID {id}."));
             // do delete and save
@@ -207,7 +220,9 @@ namespace MicroBlog.Server.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Response<IEnumerable<PostResponseDto>>>> Search(string term)
         {
-            var posts = await _blogDbContext.Posts.AsNoTracking()
+            var posts = await _blogDbContext.Posts
+                .AsNoTracking()
+                .Include(a => a.Author)
                 .Where(x => x.Title.Contains(term, StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(x => x.Created)
                 .ToListAsync().ConfigureAwait(false);
@@ -217,7 +232,7 @@ namespace MicroBlog.Server.Controllers
             var postsDto = posts.Select(p => new PostResponseDto
             {
                 ID = p.ID,
-                Author = p.Author,
+                Author = p.Author.UserName,
                 Title = p.Title,
                 Body = p.Body,
                 Created = p.Created,
