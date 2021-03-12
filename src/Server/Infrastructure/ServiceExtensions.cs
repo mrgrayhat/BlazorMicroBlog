@@ -140,10 +140,17 @@ namespace MicroBlog.Server.API.Infrastructure
 
             services.AddIdentity<UserInfo, IdentityRole>((opt) =>
             {
+                // unique Email address per account
                 opt.User.RequireUniqueEmail = IdentityOptions.GetValue<bool>("RequireUniqueEmail");
-                opt.Lockout.MaxFailedAccessAttempts = IdentityOptions.GetValue<int>("MaxFailedAccessAttempts");
-
-                if (IdentityOptions.GetValue<bool>("HighComplexity") is false)
+                // account security and lock setings
+                if (IdentityOptions.GetValue<bool>("LockoutEnabled"))
+                {
+                    opt.Lockout.AllowedForNewUsers = true;
+                    opt.Lockout.MaxFailedAccessAttempts = IdentityOptions.GetValue<int>("MaxFailedAccessAttempts");
+                    opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(IdentityOptions.GetValue<double>("LockoutTimeSpan"));
+                }
+                // password complexity and conditions
+                if (IdentityOptions.GetValue<bool>("HighPasswordComplexity") is false)
                 {
                     opt.Password.RequiredUniqueChars = 0;
                     opt.Password.RequireNonAlphanumeric = false;
@@ -164,7 +171,6 @@ namespace MicroBlog.Server.API.Infrastructure
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     RequireSignedTokens = true,
-                    SaveSigninToken = true,
                     ValidIssuer = jwtSettings.GetValue<string>("validIssuer"),
                     ValidAudience = jwtSettings.GetValue<string>("validAudience"),
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetValue<string>("securityKey")))
