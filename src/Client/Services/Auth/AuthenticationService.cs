@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using MicroBlog.BlogClient;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -28,36 +25,44 @@ namespace MicroBlog.Blazor.Client.Services.Auth
 
         public async Task<LoginResponseDto> Login(UserLoginDto userLoginDto)
         {
-            var authResult = new LoginResponseDto();
+            LoginResponseDto authResult = new LoginResponseDto();
             try
             {
-                authResult = await _accountsClient.LoginAsync(userLoginDto);
+                authResult = await _accountsClient.LoginAsync(userLoginDto).ConfigureAwait(false);
                 if (!authResult.IsAuthSuccessful)
                     return authResult;
-                await _localStorage.SetItemAsync("authToken", authResult.Token);
+
+                await _localStorage.SetItemAsync("authToken", authResult.Token).ConfigureAwait(false);
                 ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(authResult.Token);
-                return new LoginResponseDto { IsAuthSuccessful = true };
+
+                return authResult;
             }
-            catch
+            catch (ApiException<LoginResponseDto> ex)
             {
+                authResult = ex.Result;
                 return authResult;
             }
 
         }
         public async Task Logout()
         {
-            await _localStorage.RemoveItemAsync("authToken");
+            await _localStorage.RemoveItemAsync("authToken").ConfigureAwait(false);
             ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
         }
 
         public async Task<RegistrationResponseDto> RegisterUser(UserRegistrationDto userForRegistration)
         {
-            var registerResult = await _accountsClient.RegisterUserAsync(userForRegistration).ConfigureAwait(false);
-            if (!registerResult.IsSuccessfulRegistration)
+            RegistrationResponseDto registerResult = new RegistrationResponseDto();
+            try
             {
+                registerResult = await _accountsClient.RegisterUserAsync(userForRegistration).ConfigureAwait(false);
                 return registerResult;
             }
-            return new RegistrationResponseDto { IsSuccessfulRegistration = true };
+            catch (ApiException<RegistrationResponseDto> ex)
+            {
+                registerResult = ex.Result;
+                return registerResult;
+            }
         }
     }
 }
