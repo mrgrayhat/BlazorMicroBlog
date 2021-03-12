@@ -8,7 +8,7 @@ namespace MicroBlog.Blazor.Client.Pages.account
 {
     public partial class Registration
     {
-        private readonly UserRegistrationDto UserRegistrationDto = new UserRegistrationDto();
+        private UserRegistrationDto UserRegistrationDto = new UserRegistrationDto();
         [Inject]
         private IAuthenticationService AuthenticationService { get; set; }
         [Inject]
