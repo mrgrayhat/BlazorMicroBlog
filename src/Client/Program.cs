@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using MicroBlog.Blazor.Client.Services.Auth;
+using MicroBlog.Blazor.Client.Services.Http;
 using MicroBlog.Blazor.Client.Services.ToastNotification;
 using MicroBlog.BlogClient;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -19,10 +20,12 @@ namespace MicroBlog.Blazor.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
             builder.Services.AddScoped<ToastService>();
+            builder.Services.AddScoped<HttpInterceptorService>();
             builder.Services.AddAuthorizationCore();
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddHttpClientInterceptor();
             builder.Services.AddLoadingBar();
+
 
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
@@ -31,17 +34,17 @@ namespace MicroBlog.Blazor.Client
             {
                 cl.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
                 cl.EnableIntercept(sp);
-            });
+            }).AddHttpMessageHandler<HttpInterceptorService>();
             builder.Services.AddHttpClient<IBlogClient, BlogClient.BlogClient>((sp, cl) =>
             {
                 cl.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
                 cl.EnableIntercept(sp);
-            });
+            }).AddHttpMessageHandler<HttpInterceptorService>();
             builder.Services.AddHttpClient<IUploadClient, UploadClient>((sp, cl) =>
             {
                 cl.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
                 cl.EnableIntercept(sp);
-            });
+            }).AddHttpMessageHandler<HttpInterceptorService>();
 
             await builder.Build().UseLoadingBar().RunAsync();
         }
