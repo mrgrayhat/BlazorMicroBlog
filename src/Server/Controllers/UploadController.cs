@@ -7,31 +7,43 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 
 namespace MicroBlog.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "Admin,Writer")]
     public class UploadController : ControllerBase
     {
         private readonly ILogger<UploadController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private static readonly string[] ALLOWED_TYPES =
-            { "png", "jpg", "gif", "jpeg", "mp3", "mp4" };
+            { ".png", ".jpg", ".gif", ".jpeg", ".mp3", ".mp4" };
 
         public UploadController(ILogger<UploadController> logger, IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnvironment = webHostEnvironment;
             _logger = logger;
         }
+
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult Get(string path)
+        public IActionResult Get(string name)
         {
+            var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", name);
+            var provider = new FileExtensionContentTypeProvider();
+            string contentType;
+            if (!provider.TryGetContentType(path, out contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            if (!System.IO.File.Exists(path))
+                return NotFound(name + "Not Found!");
             var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-            return new FileStreamResult(fs, "");
+            return new FileStreamResult(fs, contentType);
         }
 
         [HttpPost]
@@ -39,23 +51,26 @@ namespace MicroBlog.Server.Controllers
         {
             if (file?.Length > 0)
             {
-                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
                 string fileExtesnsion = Path.GetExtension(file.FileName);
-                string fileName = Path.GetFileNameWithoutExtension(file.Name);
-                if (!ALLOWED_TYPES.Contains(fileExtesnsion))
+                string fileName = Path.GetFileNameWithoutExtension(file.FileName);
+
+                _logger.LogInformation("upload file info, FileName: {filename}, Name: {name}, type {type}", file.FileName, file.Name, file.ContentType);
+
+                if (!ALLOWED_TYPES.Any(x => x.Equals(fileExtesnsion)))
                 {
                     _logger.LogWarning("trying to send invalid file {ext}", fileExtesnsion);
-                    return BadRequest($"Invalid file type, only {ALLOWED_TYPES} are allowed.");
+                    return BadRequest($"Invalid file type, only jpg, jpeg and png are allowed.");
                 }
-                string fullPath = Path.Combine(uploadPath, fileName, fileExtesnsion);
                 try
                 {
-                    using var stream = new FileStream(fullPath, FileMode.Create);
+                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", fileName + fileExtesnsion);
+                    using var stream = new FileStream(uploadPath, FileMode.Create);
                     await file.CopyToAsync(stream);
 
-                    _logger.LogInformation("new file stored into the disk, file path is: {path}", fullPath);
+                    _logger.LogInformation("new file stored into the disk, file path is: {path}", uploadPath);
 
-                    return Ok(new Response<string>(data: fullPath));
+                    string filePath = Path.Combine("uploads", fileName + fileExtesnsion);
+                    return Ok(new Response<string>(data: filePath));
                 }
                 catch (Exception ex)
                 {
