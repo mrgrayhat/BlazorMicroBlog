@@ -61,4 +61,3 @@ namespace MicroBlog.Blazor.Client.Services.Auth
         }
     }
 }
-}
