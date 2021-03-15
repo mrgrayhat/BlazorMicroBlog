@@ -1,9 +1,7 @@
 ﻿using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using MicroBlog.Blazor.Client.Services.ToastNotification;
 using MicroBlog.BlogClient;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
@@ -47,8 +45,7 @@ namespace MicroBlog.Blazor.Client.Pages.account.Dashboard
             UserDto = new ResponseOfUserResponseDto();
             try
             {
-                UserDto = await _accountClient
-                                .GetAsync(username).ConfigureAwait(false);
+                UserDto = await _accountClient.GetAsync(username).ConfigureAwait(false);
                 _logger.LogInformation("User Response Info: ", UserDto);
 
 

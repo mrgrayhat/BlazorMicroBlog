@@ -4,74 +4,77 @@
 <hr />
 
 <div class="container">
-    <div class="row px-2">
 
-        @if (UserDto is null)
+    @if (UserDto is null)
+    {
+        <div class="loader"></div>
+    }
+    else
+    {
+        @if (UserDto.Data is null || UserDto.Succeeded is false)
         {
-            <div class="loader"></div>
+            <p class="text-center alert alert-danger">User Info Not Found!</p>
         }
         else
         {
-            @if (UserDto.Data is null || UserDto.Succeeded is false)
-            {
-                <p class="text-center alert alert-danger">User Info Not Found!</p>
-            }
-            else
-            {
-                @*<AuthorizeView>
-                    <Authorized>
+            @*<AuthorizeView>
+                <Authorized>
 
-                    </Authorized>
-                    <NotAuthorized>*@
+                </Authorized>
+                <NotAuthorized>*@
 
-                <div class="row">
-                    <div class="col-auto">
-                        <h2 class="">Nickname: @UserDto.Data.UserName</h2>
-                        <h4 class="">Email: @UserDto.Data.Email</h4>
-                    </div>
+            <div class="row">
+                <div class="col-auto">
+                    <h4>Nickname: @UserDto.Data.UserName</h4>
+                </div>
+                <div class="col-auto">
+                    <h4>Email: @UserDto.Data.Email</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <img class="img img-thumbnail" width="200" height="200" src="@UserDto.Data.Avatar" alt="@($"{UserDto.Data.Avatar} avatar")">
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <small class="">
+                        Register: @UserDto.Data.RegisterDate
+                    </small>
                 </div>
 
-                <div class="row">
-                    <img class="img img-thumbnail" width="200" height="200" src="@UserDto.Data.Avatar" alt="@($"{UserDto.Data.Avatar} avatar")">
+                <div class="col-auto">
+                    <small class="text-success">
+                        Last Activity: @UserDto.Data.LastActivityDate
+                    </small>
                 </div>
 
-                <div class="row mt-4 align-items-center">
-                    <div class="col-auto">
-                        <small class="">
-                            Register: @UserDto.Data.RegisterDate
-                        </small>
-                    </div>
-
-                    <div class="col-auto">
-                        <small class="text-success">
-                            Last Activity: @UserDto.Data.LastActivityDate
-                        </small>
-                    </div>
-
-                    <div class="col-auto">
-                        <span class="badge badge-pill badge-info">
-                            Followers: @UserDto.Data.Followers
-                        </span>
-                    </div>
-
-                    <div class="col-auto">
-                        <span class="badge badge-pill badge-info">
-                            Posts: @UserDto.Data.Posts
-                        </span>
-                    </div>
+                <div class="col-auto">
+                    <small class="badge badge-pill badge-info">
+                        Followers: @UserDto.Data.Followers
+                    </small>
                 </div>
 
-                <div class="row text-wrap">
-                    <p class="text-body">
-                        Bio: @UserDto.Data.Bio
-                    </p>
+                <div class="col-auto">
+                    <small class="badge badge-pill badge-info">
+                        Posts: @UserDto.Data.Posts
+                    </small>
                 </div>
+            </div>
+
+            <div class="row">
+                <h2>Bio: </h2>
+            </div>
+            <div class="row">
+                <p id="bio" class="text-wrap">
+                    @((MarkupString)UserDto.Data.Bio)
+                </p>
+            </div>
 
 
-                @*</NotAuthorized>
-                    </AuthorizeView>*@
-            }
+            @*</NotAuthorized>
+                </AuthorizeView>*@
         }
+    }
 
-    </div>
 </div>
