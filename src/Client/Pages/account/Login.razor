@@ -10,6 +10,7 @@
 
 <EditForm Model="_userForAuthentication" OnValidSubmit="ExecuteLogin" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
+    <ValidationSummary />
 
     <div class="form-group row">
         <label for="username" class="col-md-2 col-form-label">Username/Email:</label>
@@ -32,6 +33,7 @@
         <div class="col-md-10">
             <InputCheckbox id="remembeme" @bind-Value="_userForAuthentication.RememberMe" />
         </div>
+        <ValidationMessage For="@(() => _userForAuthentication.RememberMe)" />
     </div>
 
     <div class="row">
