@@ -1,10 +1,31 @@
-﻿<div class="row mt-4">
+﻿@if (ShowErrors)
+{
+    <div class="alert alert-danger" role="alert">
+        <i class="oi oi-warning" />
+        @foreach (var error in Errors)
+        {
+            <p>@error</p>
+        }
+    </div>
+}
+
+<div class="row mt-4">
+
     <div class="col-auto">
-        <InputFile class="form-control-file" OnChange="@HandleSelected" />
+        <label for="thumbnail">
+            Thumbnail Photo
+            <i class="oi oi-cloud-upload" />
+        </label>
+    </div>
+    <DataAnnotationsValidator />
+
+    <div class="col-auto">
+        <InputFile OnChange="@HandleSelected" />
+        <ValidationMessage For="@(() =>ImgUrl )" />
         @if (ImgUrl != null)
         {
             <div>
-                <img src="@ImgUrl" style="width:300px" />
+                <img id="imgPreview" src="@ImgUrl" style="max-width:300px;max-height:500px" alt="psot thumbnail" />
             </div>
         }
     </div>
@@ -30,10 +51,6 @@
                 </g>
             </svg>
         }
-        <label for="thumbnail">
-            <i class="oi oi-data-transfer-upload" />
-            Thumbnail Photo
-        </label>
-        <InputText name="thumbnail" id="thumbnail" @bind-Value="ImgUrl" class="form-control" />
+        @*<InputText name="thumbnail" id="thumbnail" @bind-Value="ImgUrl" class="form-control" />*@
     </div>
 </div>

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using MicroBlog.Blazor.Client.Services.ToastNotification;
 using MicroBlog.BlogClient;
@@ -25,45 +28,58 @@ namespace MicroBlog.Blazor.Client.Components
         public string ImgUrl { get; set; }
 
         private bool _uploading { get; set; } = false;
+        private IEnumerable<string> Errors { get; set; }
+        private bool ShowErrors { get; set; } = false;
 
 
         protected async Task HandleSelected(InputFileChangeEventArgs e)
         {
             IBrowserFile file = e.File;
+            if (file != null && file.Size > 0)
             {
-                if (file != null && file.Size > 0)
+                if (ContentType == UploadContentType.IMAGE || file.ContentType.Contains("image", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (ContentType == UploadContentType.IMAGE || file.ContentType.Contains("image", StringComparison.OrdinalIgnoreCase))
+                    var content = new MultipartFormDataContent();
+                    ResponseOfString uploadResult; // upload response
+                    _uploading = true;
+                    try
                     {
-                        _uploading = true;
-                        IBrowserFile resizedImage = await file.RequestImageFileAsync("image/png", 300, 300);
+                        IBrowserFile resizedImage = await file.RequestImageFileAsync("image/png", 300, 500);
                         using var memoryStream = resizedImage.OpenReadStream(resizedImage.Size);
 
-                        var content = new MultipartFormDataContent();
-                        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+                        content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+
                         content.Add(new StreamContent(memoryStream, Convert.ToInt32(resizedImage.Size)), file.ContentType, file.Name);
 
-                        var result = await UploadClient.PostAsync(new FileParameter(memoryStream, file.Name, file.ContentType));
-
-                        _uploading = false;
-                        if (result.Succeeded)
+                        uploadResult = await UploadClient.PostAsync(new FileParameter(memoryStream, file.Name, file.ContentType)).ConfigureAwait(false);
+                        if (uploadResult.Succeeded)
                         {
-                            ImgUrl = result.Data;
+                            ImgUrl = uploadResult.Data;
                             ToastService.ShowToast("Image uploaded successfully", ToastLevel.SUCCESS);
                         }
-                        else
-                        {
-                            _uploading = false;
-                            ToastService.ShowToast($"Failed to upload image. {result.Message}", ToastLevel.ERROR);
-                        }
-                        await OnChange.InvokeAsync(ImgUrl);
-
+                    }
+                    catch (ApiException<ResponseOfString> ex)
+                    {
+                        ShowErrors = true;
+                        Errors = ex.Result.Errors;
+                        ToastService.ShowToast($"Failed to upload image. {ex.Result.Message ?? ex.Result.Errors.FirstOrDefault()}", ToastLevel.ERROR);
+                    }
+                    finally
+                    {
+                        _uploading = false;
                     }
                 }
-            }
-        }
 
+                await OnChange.InvokeAsync(ImgUrl);
+            }
+            else
+            {
+                ToastService.ShowToast($"File is empty!", ToastLevel.ERROR);
+            }
+            StateHasChanged();
+        }
     }
+
 
     public enum UploadContentType
     {
