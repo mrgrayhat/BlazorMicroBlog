@@ -23,7 +23,6 @@
         var authState = await AuthState;
         if (authState != null && authState.User.Identity.IsAuthenticated)
         {
-            Console.WriteLine("Locality: " + authState.User.FindFirst(ClaimTypes.Locality).Value);
             DefaultLanguage = authState.User.FindFirst(ClaimTypes.Locality).Value;
             this.StateHasChanged();
         }
