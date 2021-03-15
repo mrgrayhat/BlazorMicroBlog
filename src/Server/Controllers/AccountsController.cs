@@ -57,7 +57,11 @@ namespace MicroBlog.Server.Controllers
                 });
             }
 
-            UserInfo userInfo = await _userManager.FindByNameAsync(username).ConfigureAwait(false);
+            UserInfo userInfo = await _userManager.Users
+                .Include(x => x.Posts)
+                .FirstOrDefaultAsync(n => n.UserName == username, cancellationToken: cancellationtoken)
+                .ConfigureAwait(false);
+
             if (userInfo is null)
             {
                 return NotFound(new Response<UserResponseDto>
