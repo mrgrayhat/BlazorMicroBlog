@@ -10,7 +10,7 @@ namespace MicroBlog.Server.Infrastructure.Contexts.Configurations.Blog
         {
             builder.HasKey(key => key.ID);
             builder.HasIndex(index => index.ID).IsUnique();
-            builder.HasIndex(index => index.Title).IsUnique();
+            builder.HasIndex(index => index.Title);
 
             builder.Property(t => t.Title).HasMaxLength(50).IsUnicode().IsRequired();
             builder.Property(b => b.Body).HasMaxLength(5000).IsUnicode().IsRequired();
