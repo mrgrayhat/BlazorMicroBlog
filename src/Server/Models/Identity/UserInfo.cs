@@ -19,7 +19,7 @@ namespace MicroBlog.Server.Models.Identity
         public byte Age { get; set; }
         public string Country { get; set; }
         public string LocaleCulture { get; set; } = "en-US";
-        public DateTime LastActivityDate { get; set; }
+        public DateTime LastActivityDate { get; set; } = DateTime.Now;
         public int Followers { get; set; }
 
         public virtual ICollection<Post> Posts { get; set; }
