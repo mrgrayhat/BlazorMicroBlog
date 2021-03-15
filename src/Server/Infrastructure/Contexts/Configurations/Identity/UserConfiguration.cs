@@ -38,6 +38,7 @@ namespace MicroBlog.Server.Infrastructure.Contexts.Configurations.Identity
                     RegisterDate = DateTime.Now,
                     Sex = "male",
                     Age = 25,
+                    Bio = @"i'm <b> saeed </b>, micro blog administrator. you are reading my bio."
                 },
                 new UserInfo // default normal user
                 {
@@ -57,7 +58,8 @@ namespace MicroBlog.Server.Infrastructure.Contexts.Configurations.Identity
                     LocaleCulture = "fa-IR",
                     RegisterDate = DateTime.Now,
                     Sex = "female",
-                    Age = 18
+                    Age = 18,
+                    Bio = @"i'm <b> User1 </b>, a normal user in micro blog. you are reading my bio."
                 });
 
         }
