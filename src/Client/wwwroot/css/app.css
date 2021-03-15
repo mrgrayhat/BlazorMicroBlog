@@ -55,15 +55,19 @@ a, .btn-link {
     border-radius: 50%;
     width: 80px;
     height: 80px;
+    -moz-animation: spin 1000ms linear infinite;
+    -o-animation: spin 1000ms linear infinite;
+    -webkit-animation: spin 1000ms linear infinite;
     animation: spin 1000ms linear infinite;
-    top: 40%;
-    left: 45%;
+    top: 45%;
+    left: 44%;
     position: absolute;
 }
 
 @keyframes spin {
     0% {
         transform: rotate(0deg);
+        opacity: 0.6;
     }
 
     100% {
