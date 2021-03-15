@@ -7,6 +7,11 @@ namespace MicroBlog.Server.Models.Identity
 {
     public class UserInfo : IdentityUser
     {
+        public UserInfo()
+        {
+            Posts = new HashSet<Post>();
+        }
+
         public string Avatar { get; set; } = @"\site\avatars\no-avatar.png";
         public string Bio { get; set; }
         public DateTime RegisterDate { get; set; } = DateTime.Now;
@@ -14,7 +19,7 @@ namespace MicroBlog.Server.Models.Identity
         public byte Age { get; set; }
         public string Country { get; set; }
         public string LocaleCulture { get; set; } = "en-US";
-        public DateTime? LastActivityDate { get; set; }
+        public DateTime LastActivityDate { get; set; }
         public int Followers { get; set; }
 
         public virtual ICollection<Post> Posts { get; set; }
