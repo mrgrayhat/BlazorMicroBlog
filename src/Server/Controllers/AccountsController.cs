@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using MicroBlog.Server.DTOs.Identity;
+using MicroBlog.Server.DTOs.User;
 using MicroBlog.Server.Models.Identity;
 using MicroBlog.Server.Services.Security;
+using MicroBlog.Server.Wrappers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -34,6 +39,52 @@ namespace MicroBlog.Server.Controllers
             _configuration = configuration;
             _jwtSettings = _configuration.GetSection("JwtSettings");
             _userManager = userManager;
+        }
+
+        [HttpGet("{username}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(Response<UserResponseDto>))]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(Response<UserResponseDto>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(Response<UserResponseDto>))]
+        public async Task<ActionResult<Response<UserResponseDto>>> Get(string username, CancellationToken cancellationtoken)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return BadRequest(new Response<UserResponseDto>
+                {
+                    Succeeded = false,
+                    Message = $"'{nameof(username)}' cannot be null or whitespace",
+                    Errors = new string[] { $"'{nameof(username)}' cannot be null or whitespace" }
+                });
+            }
+
+            UserInfo userInfo = await _userManager.FindByNameAsync(username).ConfigureAwait(false);
+            if (userInfo is null)
+            {
+                return NotFound(new Response<UserResponseDto>
+                {
+                    Succeeded = false,
+                    Message = "User Not Found.",
+                    Errors = new string[] { "User Not Found." }
+                });
+            }
+            return Ok(new Response<UserResponseDto>
+            {
+                Succeeded = true,
+                Data = new UserResponseDto
+                {
+                    Id = userInfo.Id,
+                    Avatar = userInfo.Avatar,
+                    Sex = userInfo.Sex,
+                    Bio = userInfo.Bio,
+                    Email = userInfo.Email,
+                    Followers = userInfo.Followers,
+                    LastActivityDate = userInfo.LastActivityDate,
+                    RegisterDate = userInfo.RegisterDate,
+                    UserName = userInfo.UserName,
+                    Country = userInfo.Country,
+                    Posts = userInfo.Posts.Count
+                }
+            });
         }
 
         [HttpPost("Registration")]
