@@ -1,13 +1,9 @@
 ﻿@page "/blog/newpost"
 @attribute [Authorize(Roles = "Admin,Writer")]
-@inject IBlogClient BlogClient
-@inject NavigationManager navigator
-@inject ToastService toastService
 
 <div class="container">
 
     <div class="row">
-
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Blog</a></li>
@@ -16,38 +12,49 @@
         </nav>
     </div>
 
-    <EditForm Model="PostDto" OnValidSubmit="HanleValidSubmit">
+    @if (ShowErrors)
+    {
+        <div class="alert alert-danger" role="alert">
+            <i class="oi oi-warning" />
+            @foreach (var error in Errors)
+            {
+                <p>@error</p>
+            }
+        </div>
+    }
+
+    <EditForm Model="PostDto" OnValidSubmit="HanleValidSubmit" class="card card-body bg-light mt-5">
 
         <DataAnnotationsValidator />
-        <i class="oi oi-warning" />
-        <div class="row mt-4">
-            <ValidationSummary />
-        </div>
 
         <div class="row mt-4">
             <i class="oi oi-header" />
             <label for="title"> Title</label>
             <InputText id="title" @bind-Value="PostDto.Title" class="form-control" />
+            <ValidationMessage For="@(() => PostDto.Title)" />
         </div>
         <div class="row mt-4">
             <i class="oi oi-text" />
             <label for="body"> Body</label>
             <InputTextArea id="body" @bind-Value="PostDto.Body" class="form-control" rows="10" />
+            <ValidationMessage For="@(() => PostDto.Body)" />
         </div>
 
-        <Upload OnChange="AssignImageUrl" />
+        <Upload OnChange="AssignImageUrl" ContentType="UploadContentType.IMAGE" />
 
         <div class="row mt-4">
             <i class="oi oi-tags" />
             <label for="tags"> Tags (Seperate by ;)</label>
             <InputText id="tags" @bind-Value="PostDto.Tags" class="form-control" />
+            <ValidationMessage For="@(() => PostDto.Tags)" />
         </div>
         <div class="row mt-4">
             <i class="oi oi-info" />
             <label for="description"> Description</label>
             <InputText id="description" @bind-Value="PostDto.Description" class="form-control" />
+            <ValidationMessage For="@(() => PostDto.Description)" />
         </div>
-        <div class="row mt-4">
+        <div class="row mt-4 text-right">
 
             <button class="btn btn-primary" type="submit">
                 <i class="oi oi-pencil" />
@@ -56,20 +63,3 @@
         </div>
     </EditForm>
 </div>
-
-@functions{
-
-    PostDto PostDto { get; set; } = new PostDto();
-
-    protected async void HanleValidSubmit()
-    {
-        var response = await BlogClient.PostAsync(PostDto).ConfigureAwait(false);
-        if (response.Succeeded)
-        {
-            toastService.ShowToast("Post Published Successfully!", ToastLevel.SUCCESS);
-            navigator.NavigateTo($"/blog/post/{(int)response.Data}");
-        }
-    }
-    private void AssignImageUrl(string imgUrl) => PostDto.Thumbnail = imgUrl;
-
-}
