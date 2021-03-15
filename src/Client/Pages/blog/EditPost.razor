@@ -1,8 +1,4 @@
 ﻿@page "/blog/edit/{id:int}"
-@inject IBlogClient BlogClient
-@inject NavigationManager navigator
-@inject ToastService toastService
-@attribute [Authorize(Roles = "Admin,Writer")]
 
 <div class="container">
     <div class="row">
@@ -13,6 +9,18 @@
             </ol>
         </nav>
     </div>
+
+    @if (ShowErrors)
+    {
+        <div class="alert alert-danger" role="alert">
+            <i class="oi oi-warning" />
+            @foreach (var error in Errors)
+            {
+                <p>@error</p>
+            }
+        </div>
+    }
+
     @if (PostDto is null)
     {
         <p class="text-info">Loading...</p>
@@ -21,34 +29,35 @@
     {
         <EditForm Model="PostDto" OnValidSubmit="HanleValidSubmit">
             <DataAnnotationsValidator />
-            <i class="oi oi-warning" />
-            <div class="row mt-4">
-                <ValidationSummary />
-            </div>
 
             <div class="row mt-4">
                 <i class="oi oi-header" />
                 <label for="title"> Title</label>
                 <InputText id="title" @bind-Value="PostDto.Title" class="form-control" />
+                <ValidationMessage For="@(() => PostDto.Title)" />
             </div>
             <div class="row mt-4">
                 <i class="oi oi-text" />
                 <label for="body"> Body</label>
                 <InputTextArea id="body" @bind-Value="PostDto.Body" class="form-control" rows="10" />
+                <ValidationMessage For="@(() => PostDto.Body)" />
             </div>
-            <Upload OnChange="AssignImageUrl" />
+
+            <Upload OnChange="AssignImageUrl" ContentType="UploadContentType.IMAGE" />
+
             <div class="row mt-4">
                 <i class="oi oi-tags" />
                 <label for="tags"> Tags (Seperate by ;)</label>
                 <InputText id="tags" @bind-Value="PostDto.Tags" class="form-control" />
+                <ValidationMessage For="@(() => PostDto.Tags)" />
             </div>
             <div class="row mt-4">
                 <i class="oi oi-info" />
                 <label for="description"> Description</label>
                 <InputText id="description" @bind-Value="PostDto.Description" class="form-control" />
+                <ValidationMessage For="@(() => PostDto.Description)" />
             </div>
-            <div class="row mt-4">
-
+            <div class="row mt-4 text-right">
                 <button class="btn btn-primary" type="submit">
                     <i class="oi oi-pencil" />
                     Update
@@ -57,44 +66,3 @@
         </EditForm>
     }
 </div>
-
-@functions{
-
-    [Parameter]
-    public int Id { get; set; }
-
-    private PostDto PostDto { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-
-
-        var old = await BlogClient.GetByIdAsync(Id).ConfigureAwait(false);
-        PostDto = new PostDto
-        {
-            Title = old.Data.Title,
-            Body = old.Data.Body,
-            Thumbnail = old.Data.Thumbnail,
-            Tags = old.Data.Tags,
-            Description = old.Data.Description
-        };
-    }
-
-    private void AssignImageUrl(string imgUrl) => PostDto.Thumbnail = imgUrl;
-
-    protected async void HanleValidSubmit()
-    {
-
-        var response = await BlogClient.PutAsync(Id, PostDto).ConfigureAwait(false);
-        if (response.Succeeded)
-        {
-            toastService.ShowToast("Post Updated Successfully!", ToastLevel.SUCCESS);
-            navigator.NavigateTo($"/post/{(int)response.Data}");
-        }
-        else
-        {
-            toastService.ShowToast($"Couldn't Update Post, {response.Message}", ToastLevel.ERROR);
-        }
-    }
-
-}
