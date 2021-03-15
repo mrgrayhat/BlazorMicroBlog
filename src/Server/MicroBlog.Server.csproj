@@ -46,6 +46,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Client\MicroBlog.Blazor.Client.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\" />
+  </ItemGroup>
 
 
 </Project>
