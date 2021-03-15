@@ -1,6 +1,5 @@
 ﻿using System;
 using MicroBlog.Server.Models.Identity;
-using Microsoft.AspNetCore.Identity;
 
 namespace MicroBlog.Server.API.Models.Blog
 {
@@ -15,7 +14,7 @@ namespace MicroBlog.Server.API.Models.Blog
         public string Thumbnail { get; set; }
         public string Description { get; set; }
 
-        public int AuthorId { get; set; }
+        public string AuthorId { get; set; }
         public virtual UserInfo Author { get; set; }
 
     }
