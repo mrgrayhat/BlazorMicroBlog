@@ -2,6 +2,9 @@
 
 namespace MicroBlog.Server.DTOs.Identity
 {
+    /// <summary>
+    /// register result model, Includes success status or errors
+    /// </summary>
     public class RegistrationResponseDto
     {
         public RegistrationResponseDto()

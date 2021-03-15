@@ -1,5 +1,6 @@
 ﻿namespace MicroBlog.Server.DTOs.Identity
 {
+    /// signin/login result model, Includes success status or errors
     public class LoginResponseDto
     {
         public LoginResponseDto()

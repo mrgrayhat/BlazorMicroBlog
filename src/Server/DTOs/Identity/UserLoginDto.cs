@@ -2,6 +2,9 @@
 
 namespace MicroBlog.Server.DTOs.Identity
 {
+    /// <summary>
+    /// user signin/login input model
+    /// </summary>
     public class UserLoginDto
     {
         [Required(ErrorMessage = "Username/Email is required.")]
