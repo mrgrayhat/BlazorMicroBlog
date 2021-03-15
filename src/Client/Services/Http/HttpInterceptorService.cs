@@ -8,23 +8,30 @@ using Blazored.LocalStorage;
 using MicroBlog.Blazor.Client.Services.ToastNotification;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
+using Microsoft.Extensions.Logging;
 using Toolbelt.Blazor;
 
 namespace MicroBlog.Blazor.Client.Services.Http
 {
-    public class HttpInterceptorService : DelegatingHandler
+    /// <summary>
+    /// Intercept Http Requests to Add Requirements such as token and refresh token. The SendAsync <see cref="DelegatingHandler"/> will check and execute requests. also handle responses.
+    /// 
+    /// </summary>
+    public class HttpInterceptorService : DelegatingHandler, IDisposable
     {
         private readonly HttpClientInterceptor _interceptor;
-        private readonly NavigationManager _navManager;
+        //private readonly NavigationManager _navManager;
         private readonly ILocalStorageService _localStorage;
         private readonly ToastService _toastService;
+        private readonly ILogger<HttpInterceptorService> _logger;
 
-        public HttpInterceptorService(ILocalStorageService localStorage, HttpClientInterceptor interceptor, NavigationManager navManager, ToastService toastService)
+        public HttpInterceptorService(ILogger<HttpInterceptorService> logger, ILocalStorageService localStorage, HttpClientInterceptor interceptor/*, NavigationManager navManager*/, ToastService toastService)
         {
+            _logger = logger;
             _toastService = toastService;
             _localStorage = localStorage;
             _interceptor = interceptor;
-            _navManager = navManager;
+            //_navManager = navManager;
         }
 
         #region Response handler event register and dispose delegates
@@ -45,7 +52,7 @@ namespace MicroBlog.Blazor.Client.Services.Http
             // check auth token exist on http request or not.
             if (!request.Headers.Contains("bearer"))
             {
-                // set auht token for request
+                // set auht tokens for request
                 await SetToken(request, cancellationToken);
             }
 
@@ -61,39 +68,50 @@ namespace MicroBlog.Blazor.Client.Services.Http
 
             RegisterEvent();
             var response = await base.SendAsync(request, cancellationToken);
-            DisposeEvent();
+            //DisposeEvent();
             return response;
         }
 
         private void InterceptResponse(object sender, HttpClientInterceptorEventArgs e)
         {
-            Console.WriteLine("InterceptResponse: " + e.Response.ReasonPhrase);
             if (!e.Response.IsSuccessStatusCode)
             {
                 string message = string.Empty;
                 switch (e.Response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
-                        _navManager.NavigateTo("/404");
+                        //_navManager.NavigateTo("/404");
                         message = "The requested resorce was not found.";
                         _toastService.ShowToast(message, ToastLevel.WARNING);
                         break;
                     case HttpStatusCode.BadRequest:
-                        message = "something is wrong!";
-                        _toastService.ShowToast(message, ToastLevel.WARNING);
+                        message = "Something is wrong! Please double check again.";
+                        _toastService.ShowToast(message, ToastLevel.ERROR);
                         break;
                     case HttpStatusCode.Unauthorized:
-                        _navManager.NavigateTo("/account/login");
+                        //_navManager.NavigateTo("/account/login");
                         message = "User is not authorized";
                         _toastService.ShowToast(message, ToastLevel.ERROR);
                         break;
                     default:
-                        _navManager.NavigateTo("/500");
+                        //_navManager.NavigateTo("/500");
                         message = "Something went wrong, please contact Administrator";
                         _toastService.ShowToast(message, ToastLevel.ERROR);
                         break;
+                    case HttpStatusCode.NoContent:
+                        message = "Request has been successfully processed.";
+                        _toastService.ShowToast(message, ToastLevel.INFO);
+                        break;
+                    case HttpStatusCode.RequestTimeout:
+                        message = "Unfortunately, the service is not available at this time.";
+                        _toastService.ShowToast(message, ToastLevel.WARNING);
+                        break;
+                    case HttpStatusCode.ServiceUnavailable:
+                        message = "Unfortunately, the service is not available at this time.";
+                        _toastService.ShowToast(message, ToastLevel.ERROR);
+                        break;
                 }
-                throw new HttpResponseException(message);
+                //throw new HttpResponseException(message);
             }
         }
 
@@ -119,6 +137,5 @@ namespace MicroBlog.Blazor.Client.Services.Http
                 request.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
             }
         }
-
     }
 }
