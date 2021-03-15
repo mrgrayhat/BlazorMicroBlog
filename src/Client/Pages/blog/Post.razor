@@ -5,7 +5,6 @@
     @if (PostDto is null)
     {
         <div class="loader"></div>
-        @*<p class="text-center">Loading ...</p>*@
     }
     else
     {
@@ -46,7 +45,7 @@
                     <blockquote class="blockquote mb-0">
                         <footer class="blockquote-footer">
                             <small>
-                                Author: <a href="/accont/profile/@PostDto.Data.Author" title="Author">@PostDto.Data.Author</a>
+                                Author: <a href="account/profile/@PostDto.Data.Author" title="Author">@PostDto.Data.Author</a>
                             </small>
                         </footer>
                     </blockquote>
