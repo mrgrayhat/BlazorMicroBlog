@@ -33,7 +33,7 @@
 
 @media (max-width: 640.98px) {
     .top-row:not(.auth) {
-        display: none;
+        /*display: none;*/
     }
 
     .top-row.auth {
@@ -61,7 +61,6 @@
         position: sticky;
         top: 0;
         z-index: 2; /* stay at top*/
-        /*z-index: 1;*/
     }
 
     .main > div {
