@@ -23,14 +23,18 @@ namespace MicroBlog.Server.Services.Security
         }
         public static async Task<List<Claim>> GetClaims(this UserInfo user, UserManager<UserInfo> userManager, string webRootPath)
         {
-            var claims = new List<Claim>
+            List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Country, user.Country),
-                new Claim(ClaimTypes.Locality,user.LocaleCulture),
-                new Claim("Avatar", user.Avatar)
+                new Claim(ClaimTypes.Email, user.Email)
             };
+            if (!string.IsNullOrEmpty(user.Country))
+                claims.Add(new Claim(ClaimTypes.Country, user.Country));
+            if (!string.IsNullOrEmpty(user.LocaleCulture))
+                claims.Add(new Claim(ClaimTypes.Locality, user.LocaleCulture));
+            if (!string.IsNullOrEmpty(user.Avatar))
+                claims.Add(new Claim("Avatar", user.Avatar));
+
             var roles = await userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
