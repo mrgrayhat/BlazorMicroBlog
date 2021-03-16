@@ -24,6 +24,7 @@ namespace MicroBlog.Blazor.Client
             builder.Services.AddScoped<ToastService>();
             // custom Http Interceptor service, to handle http requests requirements.
             builder.Services.AddScoped<HttpInterceptorService>();
+            //builder.Services.AddScoped<RefreshTokenService>();
             // enable auth features
             builder.Services.AddAuthorizationCore();
             // service for working with client browser storage
@@ -44,12 +45,17 @@ namespace MicroBlog.Blazor.Client
                 cl.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
                 cl.EnableIntercept(sp);
             }).AddHttpMessageHandler<HttpInterceptorService>(); // add delegate handler
+            //builder.Services.AddHttpClient<ITokenClient, TokenClient>("TokenClient", (sp, cl) =>
+            //{
+            //    cl.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+            //    cl.EnableIntercept(sp);
+            //}).AddHttpMessageHandler<HttpInterceptorService>(); // add delegate handler
 
             builder.Services.AddHttpClient<IBlogClient, BlogClient.BlogClient>("BlogClient", (sp, cl) =>
-             {
-                 cl.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-                 cl.EnableIntercept(sp);
-             }).AddHttpMessageHandler<HttpInterceptorService>(); // add delegate handler
+              {
+                  cl.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+                  cl.EnableIntercept(sp);
+              }).AddHttpMessageHandler<HttpInterceptorService>(); // add delegate handler
 
             builder.Services.AddHttpClient<IUploadClient, UploadClient>("UploadClient", (sp, cl) =>
              {
