@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using MicroBlog.Server.DTOs.Identity;
 using MicroBlog.Server.DTOs.User;
 using MicroBlog.Server.Models.Identity;
-using MicroBlog.Server.Services.Security;
+using MicroBlog.Server.Services;
 using MicroBlog.Server.Wrappers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using NSwag.Annotations;
 
 namespace MicroBlog.Server.Controllers
@@ -31,14 +28,15 @@ namespace MicroBlog.Server.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfigurationSection _jwtSettings;
         private readonly ILogger<AccountsController> _logger;
-
-        public AccountsController(ILogger<AccountsController> logger, UserManager<UserInfo> userManager, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        private readonly ITokenService _tokenService;
+        public AccountsController(ILogger<AccountsController> logger, UserManager<UserInfo> userManager, ITokenService tokenService, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnvironment = webHostEnvironment;
             _logger = logger;
             _configuration = configuration;
             _jwtSettings = _configuration.GetSection("JwtSettings");
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpGet("{username}")]
@@ -181,14 +179,15 @@ namespace MicroBlog.Server.Controllers
                     ErrorMessage = "Invalid Username/Password"
                 });
             }
-            // generate access token
-            SigningCredentials signingCredentials = JwtTokenManagerExtensions
-                .GetSigningCredentials(_jwtSettings);
-            List<Claim> claims = await JwtTokenManagerExtensions
-                .GetClaims(user, _userManager, _webHostEnvironment.WebRootPath);
-            JwtSecurityToken tokenOptions = JwtTokenManagerExtensions
-                .GenerateTokenOptions(signingCredentials, claims, _jwtSettings);
+            // generate access token & refresh token
+            var signingCredentials = _tokenService.GetSigningCredentials();
+            var claims = await _tokenService.GetClaims(user);
+            var tokenOptions = _tokenService.GenerateTokenOptions(signingCredentials, claims);
+
             string token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            user.RefreshToken = _tokenService.GenerateRefreshToken();
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+            await _userManager.UpdateAsync(user);
 
             _logger.LogWarning("Token Generated for user {user}", userLoginDto.UsernameOrEmail);
             return Ok(new LoginResponseDto
