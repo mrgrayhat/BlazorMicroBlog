@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
+using MicroBlog.Blazor.Client.Services.Auth;
 using MicroBlog.Blazor.Client.Services.ToastNotification;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
@@ -24,10 +25,12 @@ namespace MicroBlog.Blazor.Client.Services.Http
         private readonly ILocalStorageService _localStorage;
         private readonly ToastService _toastService;
         private readonly ILogger<HttpInterceptorService> _logger;
+        //private readonly RefreshTokenService _refreshTokenService;
 
-        public HttpInterceptorService(ILogger<HttpInterceptorService> logger, ILocalStorageService localStorage, HttpClientInterceptor interceptor/*, NavigationManager navManager*/, ToastService toastService)
+        public HttpInterceptorService(ILogger<HttpInterceptorService> logger, /*RefreshTokenService refreshTokenService,*/ ILocalStorageService localStorage, HttpClientInterceptor interceptor/*, NavigationManager navManager*/, ToastService toastService)
         {
             _logger = logger;
+            //_refreshTokenService = refreshTokenService;
             _toastService = toastService;
             _localStorage = localStorage;
             _interceptor = interceptor;
@@ -40,7 +43,7 @@ namespace MicroBlog.Blazor.Client.Services.Http
         #endregion
 
         /// <summary>
-        /// execute before any http request (for types/http clients that registered this interceptor)
+        /// execute before send any http request (for types/http clients that registered this interceptor)
         /// </summary>
         /// <param name="request">the sending request</param>
         /// <param name="cancellationToken"></param>
@@ -57,16 +60,17 @@ namespace MicroBlog.Blazor.Client.Services.Http
             }
 
             // refresh token check
-            //var absPath = e.Request.RequestUri.AbsolutePath;
+            //var absPath = request.RequestUri.AbsolutePath;
             //if (!absPath.Contains("token") && !absPath.Contains("accounts"))
             //{
             //    var token = await _refreshTokenService.TryRefreshToken();
-            //if (!string.IsNullOrEmpty(token))
-            //{
-            //    e.Request.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
+            //    if (!string.IsNullOrEmpty(token))
+            //    {
+            //        request.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
+            //    }
             //}
 
-            RegisterEvent();
+            //RegisterEvent();
             var response = await base.SendAsync(request, cancellationToken);
             //DisposeEvent();
             return response;
