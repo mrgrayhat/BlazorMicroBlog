@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
+using NSwag.Annotations;
 
 namespace MicroBlog.Server.Controllers
 {
@@ -42,14 +43,18 @@ namespace MicroBlog.Server.Controllers
 
             if (!System.IO.File.Exists(path))
                 return NotFound(name + "Not Found!");
-            var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+            var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
             return new FileStreamResult(fs, contentType);
+            //return PhysicalFile(path, contentType, true);
         }
 
         [HttpPost]
+        [SwaggerResponse(System.Net.HttpStatusCode.Created, typeof(Response<string>))]
+        [SwaggerResponse(System.Net.HttpStatusCode.BadRequest, typeof(Response<string>))]
+        [SwaggerResponse(System.Net.HttpStatusCode.OK, typeof(Response<string>))]
         public async Task<ActionResult<Response<string>>> Post(IFormFile file)
         {
-            if (file?.Length > 0)
+            if (file != null && file.Length > 0)
             {
                 string fileExtesnsion = Path.GetExtension(file.FileName);
                 string fileName = Path.GetFileNameWithoutExtension(file.FileName);
