@@ -21,7 +21,7 @@ namespace MicroBlog.Server.Services.Security
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
-        public static async Task<List<Claim>> GetClaims(this UserInfo user, UserManager<UserInfo> userManager, string webRootPath)
+        public static async Task<List<Claim>> GetClaims(this UserInfo user, UserManager<UserInfo> userManager)
         {
             List<Claim> claims = new List<Claim>
             {

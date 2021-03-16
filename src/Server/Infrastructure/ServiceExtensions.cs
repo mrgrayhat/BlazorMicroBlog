@@ -4,6 +4,7 @@ using System.Text;
 using MicroBlog.Server.API.Infrastructure.Contexts;
 using MicroBlog.Server.API.Infrastructure.Seeds;
 using MicroBlog.Server.Models.Identity;
+using MicroBlog.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -176,6 +177,7 @@ namespace MicroBlog.Server.API.Infrastructure
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetValue<string>("securityKey")))
                 };
             });
+            services.AddScoped<ITokenService, TokenService>();
             return services;
         }
     }

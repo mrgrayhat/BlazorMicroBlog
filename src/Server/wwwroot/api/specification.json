@@ -458,6 +458,48 @@
         }
       }
     },
+    "/api/token/refresh": {
+      "post": {
+        "tags": [
+          "Token"
+        ],
+        "operationId": "Token_Refresh",
+        "requestBody": {
+          "x-name": "tokenDto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Upload": {
       "get": {
         "tags": [
@@ -695,6 +737,10 @@
           "token": {
             "type": "string",
             "nullable": true
+          },
+          "refreshToken": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -901,6 +947,20 @@
           "thumbnail": {
             "type": "string",
             "maxLength": 512,
+            "nullable": true
+          }
+        }
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "token": {
+            "type": "string",
+            "nullable": true
+          },
+          "refreshToken": {
+            "type": "string",
             "nullable": true
           }
         }

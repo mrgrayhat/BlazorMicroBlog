@@ -28,7 +28,7 @@ namespace MicroBlog.Server
                 {
                     logger.LogInformation("Seeding Blog Database");
 
-                    await dbInitializer.Initialize(true); // true to ReCreate db or for test
+                    await dbInitializer.Initialize(); // true to ReCreate db or for test
                     await dbInitializer.SeedData();
                 }
                 catch (Exception ex)

@@ -111,12 +111,13 @@ namespace MicroBlog.Server.API.Infrastructure.Seeds
                         };
                         await context.AddAsync(helloWorldPost);
                         await context.SaveChangesAsync().ConfigureAwait(false);
+
+                        // if extra was true, add more posts to db
+                        if (addExtra)
+                            await SeedExtraPosts().ConfigureAwait(false);
                     }
                 }
             }
-            // if extra was true, add more posts to db
-            if (addExtra)
-                await SeedExtraPosts().ConfigureAwait(false);
         }
 
         /// <summary>
