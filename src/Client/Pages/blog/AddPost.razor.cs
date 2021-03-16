@@ -15,6 +15,7 @@ namespace MicroBlog.Blazor.Client.Pages.blog
         public ToastService _toastService { get; set; }
         [Inject]
         public NavigationManager NavigationManager { get; set; }
+        public bool isLoading { get; set; } = false;
         public bool ShowErrors { get; set; }
         public IEnumerable<string> Errors { get; set; }
 
@@ -22,6 +23,7 @@ namespace MicroBlog.Blazor.Client.Pages.blog
         {
             ResponseOfInteger response;
             ShowErrors = false;
+            isLoading = true;
             try
             {
                 response = await BlogClient.PostAsync(PostDto).ConfigureAwait(false);
@@ -37,6 +39,10 @@ namespace MicroBlog.Blazor.Client.Pages.blog
                 Errors = ex.Result.Errors;
                 _toastService.ShowToast("Couldn't Publish Post", ToastLevel.ERROR);
                 StateHasChanged();
+            }
+            finally
+            {
+                isLoading = false;
             }
         }
 
