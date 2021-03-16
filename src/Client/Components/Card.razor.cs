@@ -15,6 +15,7 @@ namespace MicroBlog.Blazor.Client.Components
         private IBlogClient BlogClient { get; set; }
         [Inject]
         private ToastService ToastService { get; set; }
+        public bool isLoading { get; set; } = false;
 
         private void EditPost(int id)
         {
@@ -22,9 +23,24 @@ namespace MicroBlog.Blazor.Client.Components
         }
         private async Task DeletePost(int id)
         {
-            await BlogClient.DeleteAsync(id).ConfigureAwait(false);
-            ToastService.ShowToast($"Post with id {id} Deleted Successfully", ToastLevel.SUCCESS);
-            Navigation.NavigateTo("/", true);
+            isLoading = true;
+            try
+            {
+                var result = await BlogClient.DeleteAsync(id).ConfigureAwait(false);
+                if (result.Succeeded)
+                {
+                    ToastService.ShowToast($"Post with id {id} Deleted Successfully", ToastLevel.SUCCESS);
+                    Navigation.NavigateTo("/", true);
+                }
+            }
+            catch (ApiException<ResponseOfInteger> ex)
+            {
+                ToastService.ShowToast($"Couldn't Delete Post, due to {ex.Result.Message}", ToastLevel.ERROR);
+            }
+            finally
+            {
+                isLoading = false;
+            }
         }
 
         /// <summary>
