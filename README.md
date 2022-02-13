@@ -1,6 +1,6 @@
-# .Net 5 Blazor WebAssembly MicroBlog WebApplication
+# .Net 6 Blazor WebAssembly MicroBlog WebApplication
 
-this is practical project made with .Net 5 Blazor web assembly as client app, And Asp.net Core API as server side. 
+this is practical project made with .Net 6 Blazor web assembly as client app, And Asp.net Core API as server side. 
 The goal is to demonstrate the capabilities of the Blazor.Net and wasm. Also explain the possibility of designing and building the user interface of web, desktop and mobile applications with PWA capability.
 
 In this project, I just focused on building the user interface by blazor. So I wrote it with the blazor client side (WASM) model (Asp.NetCore Hosted).
@@ -62,6 +62,7 @@ If you want to test PWA App, You must publish project and run production output.
   
   ### Project TODO List:
   - Pre Release 0.8-beta1: -> Done
+  - Performance Release 0.9 (Net 6 and apply optimizations) -> Done
   - [x] Add Swagger & API Documentation -> Done
   - [x] Add Nswag client generator -> doing
   - [x] Define the post thumbnail/picture
