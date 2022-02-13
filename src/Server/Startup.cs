@@ -39,7 +39,7 @@ namespace MicroBlog.Server
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-            app.UseSerilogRequestLogging(); // req/res logging
+            //app.UseSerilogRequestLogging(); // req/res logging
 
             app.UseCors((policy) =>
             {
