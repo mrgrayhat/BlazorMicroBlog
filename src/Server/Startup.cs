@@ -24,6 +24,9 @@ namespace MicroBlog.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            services.AddResponseCompression();
+            services.AddResponseCaching();
+
             services.AddInfrastructures(HostEnvironment, Configuration);
         }
 
@@ -40,6 +43,8 @@ namespace MicroBlog.Server
                 app.UseHsts();
             }
             //app.UseSerilogRequestLogging(); // req/res logging
+            app.UseResponseCompression();
+            app.UseResponseCaching();
 
             app.UseCors((policy) =>
             {
