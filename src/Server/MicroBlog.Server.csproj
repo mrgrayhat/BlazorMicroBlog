@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>21447391-6b07-4573-a761-7ff65cf98e37</UserSecretsId>
-	  <PublishTrimmed>true</PublishTrimmed>
+	  <!--<PublishTrimmed>true</PublishTrimmed>-->
 	  <RunAOTCompilation>true</RunAOTCompilation>
   </PropertyGroup>
 
